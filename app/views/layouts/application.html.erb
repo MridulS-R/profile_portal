@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Profile Portal</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="bg-gray-950 text-gray-100 min-h-screen">
+    <nav class="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
+      <div>
+        <%= link_to "Profile Portal", root_path, class: "font-semibold" %>
+      </div>
+      <div class="flex items-center gap-4">
+        <%= link_to "Demos", demos_path, class: "hover:underline" %>
+        <% if user_signed_in? %>
+          <%= link_to "My Profile", public_profile_path(current_user), class: "hover:underline" %>
+          <%= link_to "Edit Profile", edit_profile_path, class: "hover:underline" %>
+          <%= button_to "Sync GitHub", sync_github_path, method: :post, class: "px-3 py-1 rounded bg-blue-600" %>
+          <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "px-3 py-1 rounded bg-gray-700" %>
+        <% else %>
+          <%= link_to "Login", new_user_session_path, class: "hover:underline" %>
+          <%= link_to "Sign in with GitHub", user_github_omniauth_authorize_path, class: "px-3 py-1 rounded bg-gray-700" %>
+          <%= link_to "Sign up", new_user_registration_path, class: "hover:underline" %>
+        <% end %>
+      </div>
+    </nav>
+    <main class="max-w-6xl mx-auto p-6">
+      <% if notice %>
+        <div class="mb-4 rounded bg-emerald-800/40 border border-emerald-600 p-3"><%= notice %></div>
+      <% end %>
+      <% if alert %>
+        <div class="mb-4 rounded bg-red-800/40 border border-red-600 p-3"><%= alert %></div>
+      <% end %>
+      <%= yield %>
+    </main>
+    <footer class="text-center text-sm text-gray-500 py-8">&copy; <%= Time.current.year %> Profile Portal</footer>
+  </body>
+</html>
