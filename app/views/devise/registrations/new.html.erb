@@ -1,9 +1,23 @@
 
-<h1 class="text-2xl font-bold mb-4">Sign up</h1>
-<%= form_with model: @user, url: registration_path(:user), method: :post, class: "space-y-4" do |f| %>
-  <div><%= f.label :name %><%= f.text_field :name, class: "w-full p-2" %></div>
-  <div><%= f.label :email %><%= f.email_field :email, class: "w-full p-2" %></div>
-  <div><%= f.label :password %><%= f.password_field :password, class: "w-full p-2" %></div>
-  <div><%= f.label :password_confirmation %><%= f.password_field :password_confirmation, class: "w-full p-2" %></div>
-  <div><%= f.submit "Create account", class: "px-3 py-2 bg-blue-600 rounded" %></div>
+<h1 class="h3 mb-3">Sign up</h1>
+<%= form_with model: @user, url: registration_path(:user), method: :post do |f| %>
+  <div class="mb-3">
+    <%= f.label :name, class: "form-label" %>
+    <%= f.text_field :name, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= f.label :email, class: "form-label" %>
+    <%= f.email_field :email, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= f.label :password, class: "form-label" %>
+    <%= f.password_field :password, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= f.label :password_confirmation, class: "form-label" %>
+    <%= f.password_field :password_confirmation, class: "form-control" %>
+  </div>
+  <div>
+    <%= f.submit "Create account", class: "btn btn-primary" %>
+  </div>
 <% end %>
