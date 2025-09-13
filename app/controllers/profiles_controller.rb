@@ -22,10 +22,28 @@ class ProfilesController < ApplicationController
 
   def update
     @user = current_user
-    if @user.update(user_params)
-      redirect_to public_profile_path(@user), notice: "Profile updated"
+    attrs = user_params
+
+    if attrs[:password].present? || attrs[:password_confirmation].present?
+      if attrs[:current_password].blank?
+        @user.errors.add(:current_password, "can't be blank")
+        @domains = @user.domains
+        render :edit, status: :unprocessable_entity and return
+      end
+      if @user.update_with_password(attrs)
+        bypass_sign_in(@user)
+        redirect_to public_profile_path(@user), notice: "Profile and password updated"
+      else
+        @domains = @user.domains
+        render :edit, status: :unprocessable_entity
+      end
     else
-      render :edit, status: :unprocessable_entity
+      if @user.update(attrs.except(:current_password, :password, :password_confirmation))
+        redirect_to public_profile_path(@user), notice: "Profile updated"
+      else
+        @domains = @user.domains
+        render :edit, status: :unprocessable_entity
+      end
     end
   end
 
@@ -83,6 +101,7 @@ class ProfilesController < ApplicationController
 
   def user_params
     params.require(:user).permit(:name, :github_username, :bio, :website, :avatar_url, :banner_url,
-                                 :twitter_url, :linkedin_url, :github_url, :youtube_url)
+                                 :twitter_url, :linkedin_url, :github_url, :youtube_url,
+                                 :current_password, :password, :password_confirmation)
   end
 end
