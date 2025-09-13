@@ -22,6 +22,7 @@ gem "tailwindcss-rails", "~> 3.3.1"
 gem "rack-timeout"
 gem "lograge"
 gem 'faraday-retry'
+gem 'bundler-audit'
 
 group :development, :test do
   gem "dotenv-rails"
