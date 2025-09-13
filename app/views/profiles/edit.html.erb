@@ -37,6 +37,14 @@
           <%= f.select :theme, options_for_select([["Light", "light"], ["Dark", "dark"]], @user.theme), {}, class: "form-select" %>
         </div>
       <% end %>
+
+      <% if @user.respond_to?(:accent_color) %>
+        <div class="mb-3">
+          <%= f.label :accent_color, class: "form-label" %>
+          <%= f.color_field :accent_color, class: "form-control form-control-color", value: @user.accent_color || "#0d6efd" %>
+          <div class="form-text">Choose your accent color (buttons, links).</div>
+        </div>
+      <% end %>
       <div class="row g-3">
         <div class="col-md-6">
           <%= f.label :avatar_url, class: "form-label" %>
@@ -111,6 +119,14 @@
         <%= f.label :experience, class: "form-label" %>
         <%= f.text_area :experience, rows: 3, class: "form-control" %>
       </div>
+
+      <% if @user.respond_to?(:custom_css) %>
+        <div class="mb-3">
+          <%= f.label :custom_css, class: "form-label" %>
+          <%= f.text_area :custom_css, rows: 5, class: "form-control", placeholder: ".btn-primary { border-radius: 9999px; }" %>
+          <div class="form-text">Optional advanced styling. Use with care.</div>
+        </div>
+      <% end %>
 
       <hr class="my-4">
       <h2 class="h6">Change Password</h2>

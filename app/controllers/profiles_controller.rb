@@ -48,7 +48,11 @@ class ProfilesController < ApplicationController
         @user.resume.attach(attrs[:resume])
       end
 
-      if @user.update(attrs.except(:current_password, :password, :password_confirmation, :resume))
+      # Filter out attributes that don't exist on the model (e.g., when migrations haven't run)
+      updatable = attrs.except(:current_password, :password, :password_confirmation, :resume)
+      safe_attrs = updatable.to_h.symbolize_keys.select { |k, _| @user.has_attribute?(k) }
+
+      if @user.update(safe_attrs)
         # enqueue background scan if a new resume was attached
         ResumeScanJob.perform_later(@user.id) if attrs[:resume]
         redirect_to public_profile_path(@user), notice: "Profile updated"
@@ -107,6 +111,9 @@ class ProfilesController < ApplicationController
 
   def verify_domain
     d = current_user.domains.find(params[:id])
+    unless d.respond_to?(:verification_token)
+      redirect_to edit_profile_path, alert: "Domain verification not supported." and return
+    end
     if params[:token] == d.verification_token
       d.update(verified_at: Time.current)
       redirect_to edit_profile_path, notice: "Domain verified"
@@ -125,6 +132,7 @@ class ProfilesController < ApplicationController
     params.require(:user).permit(:name, :github_username, :bio, :website, :avatar_url, :banner_url,
                                  :twitter_url, :linkedin_url, :github_url, :youtube_url,
                                  :location, :skills, :theme, :education, :experience, :resume,
+                                 :accent_color, :custom_css,
                                  :current_password, :password, :password_confirmation)
   end
 

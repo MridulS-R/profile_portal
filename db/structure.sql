@@ -243,7 +243,9 @@ CREATE TABLE public.users (
     education text,
     experience text,
     resume_scan_status character varying DEFAULT 'pending'::character varying,
-    resume_virus_found boolean DEFAULT false NOT NULL
+    resume_virus_found boolean DEFAULT false NOT NULL,
+    accent_color character varying,
+    custom_css text
 );
 
 
@@ -502,6 +504,7 @@ ALTER TABLE ONLY public.domains
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20250914040000'),
 ('20250914033500'),
 ('20250914031500'),
 ('20250913211828'),
