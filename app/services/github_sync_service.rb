@@ -2,11 +2,13 @@
 class GithubSyncService
   def initialize(username:, token: ENV["GITHUB_TOKEN"])
     @client = Octokit::Client.new(access_token: token.presence)
+    # Ensure we fetch all repos
+    @client.auto_paginate = true
     @username = username
   end
 
   def fetch_repos
-    repos = @client.auto_paginate ? @client.repos(@username) : @client.repos(@username, per_page: 100)
+    repos = @client.repos(@username)
     repos.map do |r|
       {
         repo_full_name: r.full_name,

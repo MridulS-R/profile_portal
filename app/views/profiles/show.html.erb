@@ -33,8 +33,10 @@
         </div>
         <div class="mt-4 flex gap-3 flex-wrap">
           <%= link_to "View Demos", demos_path(username: @user.github_username), class: "px-3 py-2 rounded bg-blue-600" %>
-          <% if @user.custom_domain.present? %>
-            <a href="http://<%= @user.custom_domain %>" class="px-3 py-2 rounded bg-gray-800 border border-gray-700">Visit Domain</a>
+          <% if @user.respond_to?(:domains) && @user.domains.any? %>
+            <% @user.domains.each do |d| %>
+              <a href="http://<%= d.host %>" class="px-3 py-2 rounded bg-gray-800 border border-gray-700">Visit <%= d.host %></a>
+            <% end %>
           <% end %>
         </div>
       </div>

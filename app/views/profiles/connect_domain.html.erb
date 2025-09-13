@@ -1,0 +1,28 @@
+<h1 class="text-2xl font-bold mb-4">Connect a Custom Domain</h1>
+
+<div class="space-y-4 max-w-2xl">
+  <div class="rounded border border-gray-800 p-4 bg-black/30">
+    <h2 class="font-semibold mb-2">DNS Setup</h2>
+    <p class="text-sm text-gray-300">Point your domain to this app:</p>
+    <ul class="list-disc list-inside text-sm text-gray-400 mt-2">
+      <li>For a subdomain (e.g., <code>me.yourdomain.com</code>): add a CNAME to your Fly/primary app hostname.</li>
+      <li>For a root/apex domain: add an A/AAAA record to your app’s IPs (or use ALIAS/ANAME if supported).</li>
+    </ul>
+    <p class="text-sm text-gray-400 mt-2">After DNS propagates, add the host here.</p>
+  </div>
+
+  <div class="rounded border border-gray-800 p-4 bg-black/30">
+    <h2 class="font-semibold mb-3">Add Domain</h2>
+    <%= form_with url: domains_path, method: :post, class: "space-y-3" do %>
+      <div>
+        <label class="block text-sm mb-1">Host</label>
+        <%= text_field_tag :host, nil, placeholder: "example.yourapp.com", class: "w-full p-2 bg-gray-900 border border-gray-800 rounded" %>
+      </div>
+      <div class="flex gap-2">
+        <%= submit_tag "Add", class: "px-3 py-2 bg-blue-600 rounded" %>
+        <%= link_to "Back", edit_profile_path, class: "px-3 py-2 bg-gray-800 border border-gray-700 rounded" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
