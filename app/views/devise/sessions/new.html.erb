@@ -1,6 +1,6 @@
 
 <h1 class="h3 mb-3">Log in</h1>
-<%= form_with scope: :user, url: session_path(:user), method: :post do |f| %>
+<%= form_with scope: :user, url: session_path(:user), method: :post, local: true, data: { turbo: false } do |f| %>
   <div class="mb-3">
     <%= f.label :email, class: "form-label" %>
     <%= f.email_field :email, class: "form-control" %>
