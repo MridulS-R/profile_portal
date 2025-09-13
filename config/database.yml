@@ -1,22 +1,13 @@
 default: &default
   adapter: postgresql
-  encoding: unicode
+  url: <%= ENV['DATABASE_URL'] %>
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 development:
   <<: *default
-  database: profile_portal_development
-  username: <%= ENV["PGUSER"] || "strk" %>
-  password: <%= ENV["PGPASSWORD"] || "" %>
-  host: <%= ENV["PGHOST"] || "localhost" %>
 
 test:
   <<: *default
-  database: profile_portal_test
-  username: <%= ENV["PGUSER"] || "strk" %>
-  password: <%= ENV["PGPASSWORD"] || "" %>
-  host: <%= ENV["PGHOST"] || "localhost" %>
 
 production:
   <<: *default
-  url: <%= ENV['DATABASE_URL'] %>
