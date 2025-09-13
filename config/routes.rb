@@ -27,4 +27,7 @@ Rails.application.routes.draw do
   get "/demos", to: "projects#index", as: :demos
 
   get "/up", to: proc { [200, { "Content-Type" => "text/plain" }, ["ok"]] }
+
+  # GitHub Webhook endpoint
+  post "/webhooks/github", to: "webhooks/github#receive"
 end
