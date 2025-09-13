@@ -1,7 +1,14 @@
 
-<h1 class="h3 mb-3">Demos</h1>
+<h1 class="h3 mb-3"><%= t("projects.index.title") %></h1>
 <% if @user.present? %>
   <p class="text-muted">Showing projects for <strong><%= @user.name %></strong> (@<%= @user.github_username %>)</p>
+  <%= form_with url: demos_path, method: :get, local: true, class: "mb-3" do |f| %>
+    <%= hidden_field_tag :username, @user.github_username %>
+    <div class="input-group">
+      <%= text_field_tag :q, params[:q], placeholder: "Search projects", class: "form-control" %>
+      <button class="btn btn-outline-secondary" type="submit">Search</button>
+    </div>
+  <% end %>
 <% end %>
 
 <% if @projects.any? %>

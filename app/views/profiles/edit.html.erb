@@ -1,4 +1,4 @@
-<h1 class="h3 mb-3">Edit Profile</h1>
+<h1 class="h3 mb-3"><%= t("profiles.edit.title") %></h1>
 
 <div class="row g-4">
   <div class="col-md-8">
@@ -18,6 +18,18 @@
       <div class="mb-3">
         <%= f.label :website, class: "form-label" %>
         <%= f.url_field :website, class: "form-control" %>
+      </div>
+      <div class="mb-3">
+        <%= f.label :location, class: "form-label" %>
+        <%= f.text_field :location, class: "form-control" %>
+      </div>
+      <div class="mb-3">
+        <%= f.label :skills, class: "form-label" %>
+        <%= f.text_area :skills, rows: 3, class: "form-control" %>
+      </div>
+      <div class="mb-3">
+        <%= f.label :theme, class: "form-label" %>
+        <%= f.select :theme, options_for_select([["Light", "light"], ["Dark", "dark"]], @user.theme), {}, class: "form-select" %>
       </div>
       <div class="row g-3">
         <div class="col-md-6">
@@ -89,9 +101,26 @@
         <% if @domains.any? %>
           <ul class="list-group list-group-flush mb-3">
             <% @domains.each do |d| %>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span><%= d.host %></span>
-                <%= button_to "Remove", domain_path(d), method: :delete, class: "btn btn-sm btn-outline-danger" %>
+              <li class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span>
+                    <%= d.host %>
+                    <% if d.verified? %>
+                      <span class="badge bg-success">Verified</span>
+                    <% else %>
+                      <span class="badge bg-warning text-dark">Pending</span>
+                    <% end %>
+                  </span>
+                  <div class="d-flex gap-1">
+                    <% unless d.verified? %>
+                      <%= link_to "Verify", verify_domain_path(d, token: d.verification_token), class: "btn btn-sm btn-outline-primary" %>
+                    <% end %>
+                    <%= button_to "Remove", domain_path(d), method: :delete, class: "btn btn-sm btn-outline-danger" %>
+                  </div>
+                </div>
+                <% unless d.verified? %>
+                  <div class="small text-muted mt-1">Add a TXT record with this token: <code><%= d.verification_token %></code></div>
+                <% end %>
               </li>
             <% end %>
           </ul>

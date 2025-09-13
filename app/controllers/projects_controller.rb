@@ -9,6 +9,10 @@ class ProjectsController < ApplicationController
     if user
       @user = user
       @projects = @user.projects.order(stars: :desc)
+      if params[:q].present?
+        q = "%#{params[:q]}%"
+        @projects = @projects.where("repo_full_name ILIKE ? OR description ILIKE ?", q, q)
+      end
     else
       @projects = []
     end

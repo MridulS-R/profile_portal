@@ -1,0 +1,10 @@
+en:
+  layouts:
+    application:
+      title: "Profile Portal"
+  profiles:
+    edit:
+      title: "Edit Profile"
+  projects:
+    index:
+      title: "Demos"

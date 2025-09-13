@@ -1,7 +1,7 @@
 
 source "https://rubygems.org"
 
-ruby "3.2.2"
+ruby "3.2.3"
 
 gem "rails", "~> 7.1.3"
 gem "pg", "~> 1.5"
@@ -16,6 +16,7 @@ gem "devise"
 gem "omniauth"
 gem "omniauth-github"
 gem "omniauth-rails_csrf_protection"
+gem "omniauth-google-oauth2"
 gem "friendly_id", "~> 5.5"
 gem "octokit"
 gem "tailwindcss-rails", "~> 3.3.1"

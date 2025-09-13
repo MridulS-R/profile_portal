@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   get "/profile/connect_domain", to: "profiles#connect_domain", as: :connect_domain
   post "/profile/domains",        to: "profiles#create_domain",  as: :domains
   delete "/profile/domains/:id",  to: "profiles#destroy_domain", as: :domain
+  get "/profile/domains/:id/verify", to: "profiles#verify_domain", as: :verify_domain
 
   get "/demos", to: "projects#index", as: :demos
 
