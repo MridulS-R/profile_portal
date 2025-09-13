@@ -1,0 +1,8 @@
+:concurrency: 5
+:queues:
+  - default
+:schedule:
+  github_sync_daily:
+    cron: "0 3 * * *"
+    class: "GithubSyncWorker"
+    queue: "default"

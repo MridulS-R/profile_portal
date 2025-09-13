@@ -22,23 +22,58 @@ class ProfilesController < ApplicationController
 
   def update
     @user = current_user
-    if @user.update(user_params)
-      redirect_to public_profile_path(@user), notice: "Profile updated"
+    attrs = user_params
+
+    if attrs[:password].present? || attrs[:password_confirmation].present?
+      if attrs[:current_password].blank?
+        @user.errors.add(:current_password, "can't be blank")
+        @domains = @user.domains
+        render :edit, status: :unprocessable_entity and return
+      end
+      if @user.update_with_password(attrs)
+        bypass_sign_in(@user)
+        redirect_to public_profile_path(@user), notice: "Profile and password updated"
+      else
+        @domains = @user.domains
+        render :edit, status: :unprocessable_entity
+      end
     else
-      render :edit, status: :unprocessable_entity
+      if @user.update(attrs.except(:current_password, :password, :password_confirmation))
+        redirect_to public_profile_path(@user), notice: "Profile updated"
+      else
+        @domains = @user.domains
+        render :edit, status: :unprocessable_entity
+      end
     end
   end
 
   def sync_github
     authenticate_user!
-    service = GithubSyncService.new(username: current_user.github_username)
-    repos = service.fetch_repos
-    repos.each do |attrs|
-      proj = current_user.projects.find_or_initialize_by(repo_full_name: attrs[:repo_full_name])
-      proj.assign_attributes(attrs)
-      proj.save!
+    if current_user.github_username.blank?
+      redirect_to edit_profile_path, alert: "Set your GitHub username first." and return
     end
-    redirect_to public_profile_path(current_user), notice: "GitHub projects synced"
+
+    begin
+      service = GithubSyncService.new(username: current_user.github_username)
+      repos = service.fetch_repos
+      repos.each do |attrs|
+        proj = current_user.projects.find_or_initialize_by(repo_full_name: attrs[:repo_full_name])
+        proj.assign_attributes(attrs)
+        proj.save!
+      end
+      redirect_to public_profile_path(current_user), notice: "GitHub projects synced"
+    rescue Octokit::Unauthorized
+      redirect_to edit_profile_path, alert: "GitHub auth failed. Check GITHUB_TOKEN or try again later." 
+    rescue Octokit::TooManyRequests
+      redirect_to edit_profile_path, alert: "GitHub rate limit exceeded. Set GITHUB_TOKEN to increase limits." 
+    rescue Octokit::NotFound
+      redirect_to edit_profile_path, alert: "GitHub user not found. Verify your GitHub username." 
+    rescue ActiveRecord::RecordNotUnique
+      redirect_to edit_profile_path, alert: "Duplicate repo detected. Contact support to resolve project index uniqueness." 
+    rescue => e
+      Rails.logger.error("[sync_github] #{e.class}: #{e.message}\n#{e.backtrace&.first(5)&.join("\n")}")
+      redirect_to edit_profile_path, alert: "GitHub sync failed: #{e.class}. See logs."
+    end
   end
 
   def connect_domain; end
@@ -66,6 +101,7 @@ class ProfilesController < ApplicationController
 
   def user_params
     params.require(:user).permit(:name, :github_username, :bio, :website, :avatar_url, :banner_url,
-                                 :twitter_url, :linkedin_url, :github_url, :youtube_url, :custom_domain)
+                                 :twitter_url, :linkedin_url, :github_url, :youtube_url,
+                                 :current_password, :password, :password_confirmation)
   end
 end

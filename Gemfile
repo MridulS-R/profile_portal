@@ -23,9 +23,10 @@ gem "rack-timeout"
 gem "lograge"
 gem 'faraday-retry'
 gem 'bundler-audit'
+gem "sidekiq"
+gem "sidekiq-cron"
 
 group :development, :test do
   gem "dotenv-rails"
-  gem "sqlite3", "~> 1.6"
   gem 'spring'
 end

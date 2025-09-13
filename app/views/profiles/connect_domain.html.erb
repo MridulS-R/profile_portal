@@ -1,0 +1,32 @@
+<h1 class="h3 mb-3">Connect a Custom Domain</h1>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <h2 class="h6">DNS Setup</h2>
+        <p class="text-muted small mb-2">Point your domain to this app:</p>
+        <ul class="small mb-0">
+          <li>For a subdomain (e.g., <code>me.yourdomain.com</code>): add a CNAME to your app hostname.</li>
+          <li>For a root/apex: add A/AAAA records to your app IPs (or ALIAS/ANAME).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h6">Add Domain</h2>
+        <%= form_with url: domains_path, method: :post do %>
+          <div class="mb-3">
+            <label class="form-label">Host</label>
+            <%= text_field_tag :host, nil, placeholder: "example.yourapp.com", class: "form-control" %>
+          </div>
+          <div class="d-flex gap-2">
+            <%= submit_tag "Add", class: "btn btn-primary" %>
+            <%= link_to "Back", edit_profile_path, class: "btn btn-outline-secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,16 @@
 
 # frozen_string_literal: true
 Rails.application.routes.draw do
+  begin
+    require 'sidekiq/web'
+    # Mount Sidekiq dashboard in development for convenience
+    if Rails.env.development?
+      mount Sidekiq::Web => '/sidekiq'
+    end
+  rescue LoadError
+    # sidekiq not available; skip
+  end
+
   root "profiles#home"
 
   devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }

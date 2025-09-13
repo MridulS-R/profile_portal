@@ -7,7 +7,8 @@ Features:
 - Demos list GitHub repos with stars/forks/issues/topics/last updated
 - Custom banners and social links
 - Custom domains: host -> user profile mapping
-- Fly.io ready: Dockerfile, fly.toml, Procfile
+- Deployment ready: Dockerfile, Procfile
+- Background sync with Sidekiq + daily cron
 
 ## Setup (Local)
 
@@ -26,11 +27,19 @@ Default login: `admin@example.com` / `password` (from seeds)
 - GITHUB_CLIENT_ID=
 - GITHUB_CLIENT_SECRET=
 - DEVISE_SECRET_KEY= (optional)
+- REDIS_URL=redis://localhost:6379/0 (for Sidekiq)
 
-## Deploy (Fly.io)
+## Deploy
+
+Use any platform that supports a standard Ruby on Rails setup. A `Dockerfile` and `Procfile` are included for containerized or Procfile-based deployments.
+
+## Background Jobs
+
+- Sidekiq is used for background processing. A cron job runs daily at 03:00 UTC to sync GitHub repos for all users with a `github_username`.
+- Run locally:
 
 ```bash
-fly launch --copy-config
-fly secrets set RAILS_MASTER_KEY=$(<config/master.key) SITE_OWNER_GITHUB=your_github GITHUB_CLIENT_ID=xxx GITHUB_CLIENT_SECRET=yyy
-fly deploy
+bundle exec sidekiq -C config/sidekiq.yml
 ```
+
+- Dashboard (development): visit `/sidekiq`.

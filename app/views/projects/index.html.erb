@@ -1,32 +1,38 @@
 
-<h1 class="text-2xl font-bold mb-4">Demos</h1>
+<h1 class="h3 mb-3">Demos</h1>
 <% if @user.present? %>
-  <p class="text-gray-400 mb-4">Showing projects for <span class="font-semibold"><%= @user.name %></span> (@<%= @user.github_username %>)</p>
+  <p class="text-muted">Showing projects for <strong><%= @user.name %></strong> (@<%= @user.github_username %>)</p>
 <% end %>
 
 <% if @projects.any? %>
-  <div class="grid md:grid-cols-2 gap-4">
+  <div class="row g-3">
     <% @projects.each do |p| %>
-      <a href="<%= p.html_url %>" target="_blank" rel="noopener" class="block rounded border border-gray-800 p-4 bg-black/30 hover:border-blue-600">
-        <div class="font-semibold"><%= p.repo_full_name %></div>
-        <div class="text-sm text-gray-400"><%= p.description %></div>
-        <div class="mt-2 text-xs text-gray-400">Last updated: <%= time_ago_in_words(p.pushed_at) %> ago</div>
-        <div class="mt-3 flex items-center gap-3 text-sm text-gray-300">
-          <span>⭐ <%= p.stars %></span>
-          <span>🍴 <%= p.forks %></span>
-          <span>🐞 <%= p.open_issues %></span>
-          <% if p.language.present? %><span><%= p.language %></span><% end %>
-        </div>
-        <% if p.topics.present? %>
-          <div class="mt-3 flex flex-wrap gap-2">
-            <% Array(p.topics).each do |t| %>
-              <span class="px-2 py-0.5 text-xs rounded-full border border-gray-700 bg-gray-800/50"><%= t %></span>
-            <% end %>
+      <div class="col-md-6">
+        <a href="<%= p.html_url %>" target="_blank" rel="noopener" class="text-decoration-none text-reset">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <div class="fw-semibold"><%= p.repo_full_name %></div>
+              <div class="text-muted small"><%= p.description %></div>
+              <div class="text-muted small mt-2">Last updated: <%= time_ago_in_words(p.pushed_at) %> ago</div>
+              <div class="mt-2 d-flex gap-2 small">
+                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">⭐ <%= p.stars %></span>
+                <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">🍴 <%= p.forks %></span>
+                <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">🐞 <%= p.open_issues %></span>
+                <% if p.language.present? %><span class="badge bg-light text-dark border"><%= p.language %></span><% end %>
+              </div>
+              <% if p.topics.present? %>
+                <div class="mt-2 d-flex flex-wrap gap-1">
+                  <% Array(p.topics).each do |t| %>
+                    <span class="badge text-bg-light"><%= t %></span>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
           </div>
-        <% end %>
-      </a>
+        </a>
+      </div>
     <% end %>
   </div>
 <% else %>
-  <div class="text-gray-400">No projects yet.</div>
+  <div class="text-muted">No projects yet.</div>
 <% end %>
