@@ -175,7 +175,9 @@ CREATE TABLE public.projects (
     pushed_at timestamp(6) without time zone,
     fetched_at timestamp(6) without time zone,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    pinned boolean DEFAULT false NOT NULL,
+    hidden boolean DEFAULT false NOT NULL
 );
 
 
@@ -233,7 +235,9 @@ CREATE TABLE public.users (
     provider character varying,
     uid character varying,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    theme character varying DEFAULT 'light'::character varying NOT NULL,
+    custom_css text
 );
 
 
@@ -485,6 +489,8 @@ ALTER TABLE ONLY public.domains
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20250913193100'),
+('20250913193000'),
 ('20250913190000'),
 ('20250913183125'),
 ('20250101000020'),

@@ -13,7 +13,9 @@
             <div class="card-body">
               <div class="fw-semibold"><%= p.repo_full_name %></div>
               <div class="text-muted small"><%= p.description %></div>
-              <div class="text-muted small mt-2">Last updated: <%= time_ago_in_words(p.pushed_at) %> ago</div>
+              <% if p.pushed_at.present? %>
+                <div class="text-muted small mt-2">Last updated: <%= time_ago_in_words(p.pushed_at) %> ago</div>
+              <% end %>
               <div class="mt-2 d-flex gap-2 small">
                 <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">⭐ <%= p.stars %></span>
                 <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">🍴 <%= p.forks %></span>

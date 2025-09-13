@@ -1,0 +1,31 @@
+alpha_for_one:
+  user: one
+  repo_full_name: alicehub/alpha
+  html_url: https://github.com/alicehub/alpha
+  description: Alpha project
+  language: Ruby
+  stars: 10
+  forks: 2
+  open_issues: 0
+  topics: "[\"rails\", \"portfolio\"]"
+  homepage: https://alpha.example.com
+  pushed_at: <%= 2.days.ago %>
+  fetched_at: <%= Time.current %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+beta_for_two:
+  user: two
+  repo_full_name: bobhub/beta
+  html_url: https://github.com/bobhub/beta
+  description: Beta project
+  language: Go
+  stars: 5
+  forks: 1
+  open_issues: 1
+  topics: "[\"cli\"]"
+  homepage: 
+  pushed_at: <%= 1.day.ago %>
+  fetched_at: <%= Time.current %>
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

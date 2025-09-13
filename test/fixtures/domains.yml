@@ -1,0 +1,11 @@
+one_domain:
+  user: one
+  host: alice.example.com
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+two_domain:
+  user: two
+  host: bob.example.com
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

@@ -1,0 +1,17 @@
+one:
+  email: user1@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  name: Alice
+  github_username: alicehub
+  slug: alice
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+two:
+  email: user2@example.com
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  name: Bob
+  github_username: bobhub
+  slug: bob
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
