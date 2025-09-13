@@ -6,14 +6,14 @@ default: &default
 development:
   <<: *default
   database: profile_portal_development
-  username: <%= ENV["PGUSER"] || "postgres" %>
+  username: <%= ENV["PGUSER"] || "strk" %>
   password: <%= ENV["PGPASSWORD"] || "" %>
   host: <%= ENV["PGHOST"] || "localhost" %>
 
 test:
   <<: *default
   database: profile_portal_test
-  username: <%= ENV["PGUSER"] || "postgres" %>
+  username: <%= ENV["PGUSER"] || "strk" %>
   password: <%= ENV["PGPASSWORD"] || "" %>
   host: <%= ENV["PGHOST"] || "localhost" %>
 
