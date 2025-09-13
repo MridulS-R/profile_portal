@@ -11,7 +11,7 @@ SET row_security = off;
 
 SET default_tablespace = '';
 
--- SET default_table_access_method = heap;
+SET default_table_access_method = heap;
 
 --
 -- Name: active_storage_attachments; Type: TABLE; Schema: public; Owner: -
@@ -405,17 +405,17 @@ CREATE INDEX index_domains_on_user_id ON public.domains USING btree (user_id);
 
 
 --
--- Name: index_projects_on_repo_full_name; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_projects_on_repo_full_name ON public.projects USING btree (repo_full_name);
-
-
---
 -- Name: index_projects_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_projects_on_user_id ON public.projects USING btree (user_id);
+
+
+--
+-- Name: index_projects_on_user_id_and_repo_full_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_projects_on_user_id_and_repo_full_name ON public.projects USING btree (user_id, repo_full_name);
 
 
 --
@@ -485,6 +485,7 @@ ALTER TABLE ONLY public.domains
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20250913190000'),
 ('20250913183125'),
 ('20250101000020'),
 ('20250101000010'),

@@ -31,14 +31,31 @@ class ProfilesController < ApplicationController
 
   def sync_github
     authenticate_user!
-    service = GithubSyncService.new(username: current_user.github_username)
-    repos = service.fetch_repos
-    repos.each do |attrs|
-      proj = current_user.projects.find_or_initialize_by(repo_full_name: attrs[:repo_full_name])
-      proj.assign_attributes(attrs)
-      proj.save!
+    if current_user.github_username.blank?
+      redirect_to edit_profile_path, alert: "Set your GitHub username first." and return
     end
-    redirect_to public_profile_path(current_user), notice: "GitHub projects synced"
+
+    begin
+      service = GithubSyncService.new(username: current_user.github_username)
+      repos = service.fetch_repos
+      repos.each do |attrs|
+        proj = current_user.projects.find_or_initialize_by(repo_full_name: attrs[:repo_full_name])
+        proj.assign_attributes(attrs)
+        proj.save!
+      end
+      redirect_to public_profile_path(current_user), notice: "GitHub projects synced"
+    rescue Octokit::Unauthorized
+      redirect_to edit_profile_path, alert: "GitHub auth failed. Check GITHUB_TOKEN or try again later." 
+    rescue Octokit::TooManyRequests
+      redirect_to edit_profile_path, alert: "GitHub rate limit exceeded. Set GITHUB_TOKEN to increase limits." 
+    rescue Octokit::NotFound
+      redirect_to edit_profile_path, alert: "GitHub user not found. Verify your GitHub username." 
+    rescue ActiveRecord::RecordNotUnique
+      redirect_to edit_profile_path, alert: "Duplicate repo detected. Contact support to resolve project index uniqueness." 
+    rescue => e
+      Rails.logger.error("[sync_github] #{e.class}: #{e.message}\n#{e.backtrace&.first(5)&.join("\n")}")
+      redirect_to edit_profile_path, alert: "GitHub sync failed: #{e.class}. See logs."
+    end
   end
 
   def connect_domain; end
