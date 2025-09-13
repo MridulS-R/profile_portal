@@ -6,12 +6,14 @@ class Domain < ApplicationRecord
   before_create :set_verification_token
 
   def verified?
-    verified_at.present?
+    has_attribute?(:verified_at) ? verified_at.present? : false
   end
 
   private
 
   def set_verification_token
-    self.verification_token ||= SecureRandom.hex(8)
+    if has_attribute?(:verification_token)
+      self.verification_token ||= SecureRandom.hex(8)
+    end
   end
 end

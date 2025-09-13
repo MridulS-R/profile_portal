@@ -13,7 +13,7 @@ class ProfilesController < ApplicationController
   def show
     @user = User.friendly.find(params[:slug])
     @projects = @user.projects.order(stars: :desc)
-    @user.increment!(:views_count)
+    @user.increment!(:views_count) if @user.has_attribute?(:views_count)
   end
 
   def edit

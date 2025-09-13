@@ -19,18 +19,24 @@
         <%= f.label :website, class: "form-label" %>
         <%= f.url_field :website, class: "form-control" %>
       </div>
-      <div class="mb-3">
-        <%= f.label :location, class: "form-label" %>
-        <%= f.text_field :location, class: "form-control" %>
-      </div>
-      <div class="mb-3">
-        <%= f.label :skills, class: "form-label" %>
-        <%= f.text_area :skills, rows: 3, class: "form-control" %>
-      </div>
-      <div class="mb-3">
-        <%= f.label :theme, class: "form-label" %>
-        <%= f.select :theme, options_for_select([["Light", "light"], ["Dark", "dark"]], @user.theme), {}, class: "form-select" %>
-      </div>
+      <% if @user.respond_to?(:location) %>
+        <div class="mb-3">
+          <%= f.label :location, class: "form-label" %>
+          <%= f.text_field :location, class: "form-control" %>
+        </div>
+      <% end %>
+      <% if @user.respond_to?(:skills) %>
+        <div class="mb-3">
+          <%= f.label :skills, class: "form-label" %>
+          <%= f.text_area :skills, rows: 3, class: "form-control" %>
+        </div>
+      <% end %>
+      <% if @user.respond_to?(:theme) %>
+        <div class="mb-3">
+          <%= f.label :theme, class: "form-label" %>
+          <%= f.select :theme, options_for_select([["Light", "light"], ["Dark", "dark"]], @user.theme), {}, class: "form-select" %>
+        </div>
+      <% end %>
       <div class="row g-3">
         <div class="col-md-6">
           <%= f.label :avatar_url, class: "form-label" %>
@@ -112,13 +118,13 @@
                     <% end %>
                   </span>
                   <div class="d-flex gap-1">
-                    <% unless d.verified? %>
+                    <% if d.respond_to?(:verification_token) && !d.verified? %>
                       <%= link_to "Verify", verify_domain_path(d, token: d.verification_token), class: "btn btn-sm btn-outline-primary" %>
                     <% end %>
                     <%= button_to "Remove", domain_path(d), method: :delete, class: "btn btn-sm btn-outline-danger" %>
                   </div>
                 </div>
-                <% unless d.verified? %>
+                <% if d.respond_to?(:verification_token) && !d.verified? %>
                   <div class="small text-muted mt-1">Add a TXT record with this token: <code><%= d.verification_token %></code></div>
                 <% end %>
               </li>
