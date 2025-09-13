@@ -30,10 +30,10 @@
             <% else %>
               <%= link_to "Login", new_user_session_path, class: "btn btn-outline-light btn-sm" %>
               <% if defined?(user_github_omniauth_authorize_path) %>
-                <%= link_to "Sign in with GitHub", user_github_omniauth_authorize_path, class: "btn btn-secondary btn-sm" %>
+                <%= button_to "Sign in with GitHub", user_github_omniauth_authorize_path, method: :post, class: "btn btn-secondary btn-sm", data: { turbo: false } %>
               <% end %>
               <% if defined?(user_google_oauth2_omniauth_authorize_path) %>
-                <%= link_to "Sign in with Google", user_google_oauth2_omniauth_authorize_path, class: "btn btn-secondary btn-sm" %>
+                <%= button_to "Sign in with Google", user_google_oauth2_omniauth_authorize_path, method: :post, class: "btn btn-secondary btn-sm", data: { turbo: false } %>
               <% end %>
               <%= link_to "Sign up", new_user_registration_path, class: "btn btn-primary btn-sm" %>
             <% end %>
