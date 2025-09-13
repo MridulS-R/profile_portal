@@ -8,5 +8,5 @@ Devise.setup do |config|
   end
   config.navigational_formats = ["*/*", :html, :turbo_stream]
   config.parent_controller = "TurboDeviseController"
-  config.secret_key = ENV["DEVISE_SECRET_KEY"] if ENV["DEVISE_SECRET_KEY"].present()
+  config.secret_key = ENV["DEVISE_SECRET_KEY"] if ENV["DEVISE_SECRET_KEY"].present?
 end

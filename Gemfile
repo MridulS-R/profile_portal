@@ -21,6 +21,7 @@ gem "octokit"
 gem "tailwindcss-rails", "~> 3.3.1"
 gem "rack-timeout"
 gem "lograge"
+gem 'faraday-retry'
 
 group :development, :test do
   gem "dotenv-rails"
