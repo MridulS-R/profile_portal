@@ -234,12 +234,16 @@ CREATE TABLE public.users (
     custom_domain character varying,
     provider character varying,
     uid character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     location character varying,
     skills text,
-    theme character varying DEFAULT 'light',
+    theme character varying DEFAULT 'light'::character varying,
     views_count integer DEFAULT 0 NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    education text,
+    experience text,
+    resume_scan_status character varying DEFAULT 'pending'::character varying,
+    resume_virus_found boolean DEFAULT false NOT NULL
 );
 
 
@@ -498,6 +502,10 @@ ALTER TABLE ONLY public.domains
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20250914033500'),
+('20250914031500'),
+('20250913211828'),
+('20250913211827'),
 ('20250913190000'),
 ('20250913183125'),
 ('20250101000020'),

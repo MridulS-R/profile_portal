@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
 
   get "/u/:slug", to: "profiles#show", as: :public_profile
+  get "/u/:slug/resume", to: "profiles#resume", as: :profile_resume
   get "/profile/edit", to: "profiles#edit", as: :edit_profile
   patch "/profile", to: "profiles#update", as: :profile
   post "/profile/sync_github", to: "profiles#sync_github", as: :sync_github

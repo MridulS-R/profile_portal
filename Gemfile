@@ -26,6 +26,7 @@ gem 'faraday-retry'
 gem 'bundler-audit'
 gem "sidekiq"
 gem "sidekiq-cron"
+gem 'clamby'
 
 group :development, :test do
   gem "dotenv-rails"

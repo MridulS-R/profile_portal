@@ -67,6 +67,52 @@
       </div>
 
       <hr class="my-4">
+      <h2 class="h6">Resume & Details</h2>
+      <% if Rails.env.development? && defined?(Sidekiq) %>
+        <% begin
+             running = Sidekiq::ProcessSet.new.size > 0
+           rescue
+             running = false
+           end %>
+        <% unless running %>
+          <div class="alert alert-warning py-2">
+            Background jobs are not running. Start Sidekiq with
+            <code>bundle exec sidekiq</code>.
+            <%= link_to 'Open dashboard', '/sidekiq', class: 'alert-link ms-1' %>
+          </div>
+        <% end %>
+      <% end %>
+      <div class="mb-3">
+        <%= f.label :resume, class: "form-label" %>
+        <%= f.file_field :resume, class: "form-control" %>
+        <div class="form-text">Allowed: PDF, DOC, DOCX. Max 10 MB.</div>
+        <% if @user.resume.attached? %>
+          <div class="form-text mt-1">
+            Current: <%= @user.resume.filename.to_s %> (<%= number_to_human_size(@user.resume.byte_size) %>)
+          </div>
+          <% if @user.respond_to?(:resume_scan_status) %>
+            <div class="form-text">Scan status: <strong><%= @user.resume_scan_status %></strong></div>
+            <% if @user.respond_to?(:resume_virus_found) && @user.resume_virus_found %>
+              <div class="text-danger small">Warning: last upload flagged as infected. The file was removed.</div>
+            <% end %>
+          <% end %>
+          <div class="form-check mt-1">
+            <%= check_box_tag :remove_resume, '1', false, class: 'form-check-input', id: 'remove_resume' %>
+            <%= label_tag :remove_resume, 'Remove current resume', class: 'form-check-label' %>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :education, class: "form-label" %>
+        <%= f.text_area :education, rows: 3, class: "form-control" %>
+      </div>
+      <div class="mb-3">
+        <%= f.label :experience, class: "form-label" %>
+        <%= f.text_area :experience, rows: 3, class: "form-control" %>
+      </div>
+
+      <hr class="my-4">
       <h2 class="h6">Change Password</h2>
       <p class="text-muted small">To change your password, enter your current password and the new password.</p>
       <div class="row g-3">
