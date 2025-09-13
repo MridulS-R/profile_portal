@@ -18,11 +18,12 @@ gem "omniauth-github"
 gem "omniauth-rails_csrf_protection"
 gem "friendly_id", "~> 5.5"
 gem "octokit"
-gem "tailwindcss-rails"
+gem "tailwindcss-rails", "~> 3.3.1"
 gem "rack-timeout"
 gem "lograge"
 
 group :development, :test do
   gem "dotenv-rails"
   gem "sqlite3", "~> 1.6"
+  gem 'spring'
 end
