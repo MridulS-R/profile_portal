@@ -26,7 +26,3 @@ group :development, :test do
   gem "dotenv-rails"
   gem "sqlite3", "~> 1.6"
 end
-
-group :production do
-  gem "pg"
-end
