@@ -47,8 +47,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_13_183125) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "verification_token"
+    t.datetime "verified_at"
     t.index ["host"], name: "index_domains_on_host", unique: true
     t.index ["user_id"], name: "index_domains_on_user_id"
+    t.index ["verification_token"], name: "index_domains_on_verification_token", unique: true
   end
 
   create_table "projects", force: :cascade do |t|
@@ -90,6 +93,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_13_183125) do
     t.string "custom_domain"
     t.string "provider"
     t.string "uid"
+    t.string "location"
+    t.text "skills"
+    t.string "theme", default: "light"
+    t.integer "views_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["custom_domain"], name: "index_users_on_custom_domain", unique: true

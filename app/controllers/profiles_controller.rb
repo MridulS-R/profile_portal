@@ -1,6 +1,6 @@
 
 class ProfilesController < ApplicationController
-  before_action :authenticate_user!, only: [:edit, :update, :connect_domain, :create_domain, :destroy_domain]
+  before_action :authenticate_user!, only: [:edit, :update, :connect_domain, :create_domain, :destroy_domain, :verify_domain]
 
   def home
     @user = @domain_user || site_owner || current_user || User.first
@@ -13,6 +13,7 @@ class ProfilesController < ApplicationController
   def show
     @user = User.friendly.find(params[:slug])
     @projects = @user.projects.order(stars: :desc)
+    @user.increment!(:views_count) if @user.has_attribute?(:views_count)
   end
 
   def edit
@@ -93,6 +94,16 @@ class ProfilesController < ApplicationController
     redirect_to edit_profile_path, notice: "Domain removed"
   end
 
+  def verify_domain
+    d = current_user.domains.find(params[:id])
+    if params[:token] == d.verification_token
+      d.update(verified_at: Time.current)
+      redirect_to edit_profile_path, notice: "Domain verified"
+    else
+      redirect_to edit_profile_path, alert: "Invalid verification token"
+    end
+  end
+
   private
   def site_owner
     gh = ENV["SITE_OWNER_GITHUB"].presence
@@ -102,6 +113,7 @@ class ProfilesController < ApplicationController
   def user_params
     params.require(:user).permit(:name, :github_username, :bio, :website, :avatar_url, :banner_url,
                                  :twitter_url, :linkedin_url, :github_url, :youtube_url,
+                                 :location, :skills, :theme,
                                  :current_password, :password, :password_confirmation)
   end
 end

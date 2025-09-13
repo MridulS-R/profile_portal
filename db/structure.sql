@@ -133,7 +133,9 @@ CREATE TABLE public.domains (
     host character varying NOT NULL,
     user_id bigint NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    verification_token character varying,
+    verified_at timestamp(6) without time zone
 );
 
 
@@ -232,6 +234,10 @@ CREATE TABLE public.users (
     custom_domain character varying,
     provider character varying,
     uid character varying,
+    location character varying,
+    skills text,
+    theme character varying DEFAULT 'light',
+    views_count integer DEFAULT 0 NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
@@ -402,6 +408,13 @@ CREATE UNIQUE INDEX index_domains_on_host ON public.domains USING btree (host);
 --
 
 CREATE INDEX index_domains_on_user_id ON public.domains USING btree (user_id);
+
+
+--
+-- Name: index_domains_on_verification_token; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_domains_on_verification_token ON public.domains USING btree (verification_token);
 
 
 --
