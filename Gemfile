@@ -26,6 +26,7 @@ gem 'bundler-audit'
 gem "sidekiq"
 gem "sidekiq-cron"
 gem 'clamby'
+gem 'rss'
 
 group :development, :test do
   gem "dotenv-rails"

@@ -1,4 +1,8 @@
-require 'rss'
+begin
+  require 'rss'
+rescue LoadError
+  # rss gem not available; RSS fallback will be disabled
+end
 require 'time'
 require 'open-uri'
 
@@ -59,6 +63,7 @@ class AiMlAggregator
     end
 
     def via_rss(limit)
+      return [] unless defined?(RSS) && defined?(RSS::Parser)
       items = []
       FEEDS.each do |url|
         begin
