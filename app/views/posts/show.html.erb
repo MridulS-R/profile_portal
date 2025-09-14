@@ -2,8 +2,10 @@
   <div class="sixteen wide column">
     <div class="ui grid">
       <div class="twelve wide column">
-        <h1 class="ui header"><%= @post.title %></h1>
-        <div class="ui small grey text">Published <%= time_ago_in_words(@post.published_at || @post.created_at) %> ago by <%= @post.user.name %></div>
+        <div class="post-header">
+          <h1 class="ui header" style="margin-bottom:.25rem;"><%= @post.title %></h1>
+          <div class="post-meta">Published <%= time_ago_in_words(@post.published_at || @post.created_at) %> ago by <%= @post.user.name %></div>
+        </div>
       </div>
       <div class="four wide right aligned column">
         <div class="ui buttons">
@@ -15,7 +17,7 @@
         </div>
       </div>
     </div>
-    <div class="ui segment">
+    <div class="ui raised very padded segment post-segment">
       <div class="post-content"><%= @post.rendered_body.html_safe %></div>
     </div>
 

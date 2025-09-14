@@ -6,12 +6,29 @@
 }
 
 body.abstract-bg {
-  /* Force a clean black backdrop; remove gradients */
-  background-color: #000 !important;
+  /* Solid light-dark background (no image) */
+  background-color: #121826 !important; /* lighter dark */
   background-image: none !important;
   background-attachment: fixed;
-  /* Ensure default text remains readable on black */
+  /* Ensure default text remains readable on dark */
   color: #e9ecef;
+}
+
+/* News categories: use darker pills instead of blue */
+.nav-pills .nav-link {
+  color: #cbd5e1; /* slate-300 */
+  background-color: transparent;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.nav-pills .nav-link:hover {
+  color: #fff;
+  background-color: rgba(255,255,255,0.06);
+}
+.nav-pills .nav-link.active,
+.nav-pills .nav-link.active:hover {
+  color: #fff;
+  background-color: #1f2937; /* slate-800 */
+  border-color: transparent;
 }
 
 /* Respect user accent color if provided */
@@ -61,3 +78,20 @@ main.container {
   transform: translateY(-2px);
   box-shadow: 0 1rem 1.5rem rgba(0,0,0,var(--card-shadow-alpha-hover, 0.22));
 }
+
+/* Profile sidebar card styling */
+.profiles-page .ui.card.fluid {
+  background-color: #9e9e9e !important;
+  color: #ffffff !important;
+}
+.profiles-page .ui.card.fluid .content,
+.profiles-page .ui.card.fluid .header,
+.profiles-page .ui.card.fluid .meta,
+.profiles-page .ui.card.fluid .description,
+.profiles-page .ui.card.fluid .summary,
+.profiles-page .ui.card.fluid .list .item,
+.profiles-page .ui.card.fluid a {
+  color: #f8f9fa !important;
+}
+.profiles-page .ui.card.fluid .ui.basic.label { color: #111 !important; background: rgba(255,255,255,0.85) !important; }
+.profiles-page .ui.card.fluid .ui.label { border-radius: .4rem; }

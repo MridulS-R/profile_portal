@@ -16,7 +16,7 @@ class PostReactionsController < ApplicationController
 
   private
   def set_post
-    @post = Post.friendly.find(params[:post_id])
+    post_id = params[:post_id] || params[:id]
+    @post = Post.friendly.find(post_id)
   end
 end
-

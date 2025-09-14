@@ -49,6 +49,6 @@ Rails.application.routes.draw do
 
   resources :posts do
     resources :post_comments, only: [:create, :destroy]
-    post 'react', to: 'post_reactions#create'
+    post 'react', to: 'post_reactions#create', on: :member
   end
 end
