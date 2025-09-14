@@ -11,7 +11,7 @@ Rails.application.routes.draw do
     # sidekiq not available; skip
   end
 
-  root "profiles#home"
+  root "posts#index"
 
   devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
 
@@ -26,7 +26,12 @@ Rails.application.routes.draw do
   delete "/profile/domains/:id",  to: "profiles#destroy_domain", as: :domain
   get "/profile/domains/:id/verify", to: "profiles#verify_domain", as: :verify_domain
 
-  get "/demos", to: "projects#index", as: :demos
+  # Projects listing
+  get "/projects", to: "projects#index", as: :projects
+  # Backward-compatible route for older links
+  get "/demos", to: "projects#index"
 
   get "/up", to: proc { [200, { "Content-Type" => "text/plain" }, ["ok"]] }
+
+  resources :posts
 end

@@ -1,0 +1,20 @@
+<%= form_with model: @post, local: true do |f| %>
+  <div class="mb-3">
+    <%= f.label :title, class: "form-label" %>
+    <%= f.text_field :title, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= f.label :body, class: "form-label" %>
+    <%= f.text_area :body, rows: 10, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= f.label :published_at, class: "form-label" %>
+    <%= f.datetime_local_field :published_at, class: "form-control" %>
+    <div class="form-text">Defaults to now if left blank</div>
+  </div>
+  <div class="d-flex gap-2">
+    <%= f.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", (@post.persisted? ? post_path(@post) : posts_path), class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>
+

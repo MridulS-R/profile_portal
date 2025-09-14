@@ -1,0 +1,47 @@
+<div class="row g-3">
+  <div class="col-12 d-flex justify-content-between align-items-center">
+    <h1 class="h3 mb-0"><%= @post.title %></h1>
+    <div class="d-flex gap-2">
+      <% if user_signed_in? && @post.user_id == current_user.id %>
+        <%= link_to "Edit", edit_post_path(@post), class: "btn btn-outline-secondary btn-sm" %>
+        <%= button_to "Delete", post_path(@post), method: :delete, data: { confirm: "Delete this post?" }, class: "btn btn-outline-danger btn-sm" %>
+      <% end %>
+      <%= link_to "Back", posts_path, class: "btn btn-outline-primary btn-sm" %>
+    </div>
+  </div>
+  <div class="col-12 text-muted small">Published <%= time_ago_in_words(@post.published_at || @post.created_at) %> ago by <%= @post.user.name %></div>
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <%= @post.rendered_body.html_safe %>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 order-md-2">
+    <div class="card shadow-sm">
+      <div class="card-body d-flex align-items-center gap-3">
+        <% if @post.user.avatar_url.present? %>
+          <img src="<%= @post.user.avatar_url %>" class="rounded-circle border" alt="Avatar" width="48" height="48">
+        <% end %>
+        <div>
+          <div class="fw-semibold"><%= @post.user.name %></div>
+          <% if @post.user.github_username.present? %>
+            <div class="text-muted small">@<%= @post.user.github_username %></div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8 order-md-1">
+    <% if @post.category || @post.tags.any? %>
+      <div class="mb-3">
+        <% if @post.category %>
+          <span class="badge text-bg-secondary me-2"><%= @post.category.name %></span>
+        <% end %>
+        <% @post.tags.each do |t| %>
+          <%= link_to t.name, posts_path(tag: t.slug), class: 'badge text-bg-light me-1' %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

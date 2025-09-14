@@ -9,6 +9,7 @@ class User < ApplicationRecord
 
   has_many :projects, dependent: :destroy
   has_many :domains, dependent: :destroy
+  has_many :posts, dependent: :destroy
   has_one_attached :resume
 
   validate :validate_resume
