@@ -36,8 +36,7 @@ class ApplicationController < ActionController::Base
     log_event(:warn, 'not_found', _e)
     respond_to do |format|
       format.html do
-        flash[:alert] = "We couldn't find what you were looking for."
-        redirect_back fallback_location: root_path
+        render 'errors/not_found', status: :not_found
       end
       format.json { render json: { error: "not_found" }, status: :not_found }
     end
@@ -47,8 +46,8 @@ class ApplicationController < ActionController::Base
     log_event(:error, 'server_error', e)
     respond_to do |format|
       format.html do
-        flash[:alert] = "Something went wrong. Please try again."
-        redirect_back fallback_location: root_path
+        # Avoid redirect loops on pages like root; render a friendly error page instead.
+        render 'errors/internal', status: :internal_server_error
       end
       format.json { render json: { error: "server_error" }, status: :internal_server_error }
     end
