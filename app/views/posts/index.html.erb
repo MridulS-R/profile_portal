@@ -17,11 +17,11 @@
             </div>
             <p class="mb-1 text-muted">
               by <%= post.user.name %>
-              <% if post.category %>
+              <% if table_exists?('categories') && post.category %>
                 · <%= link_to post.category.name, posts_path(category: post.category.slug), class: 'chip' %>
               <% end %>
             </p>
-            <% if post.tags.any? %>
+            <% if table_exists?('tags') && table_exists?('post_tags') && post.tags.any? %>
               <div class="small">
                 <% post.tags.each do |t| %>
                   <%= link_to t.name, posts_path(tag: t.slug), class: 'chip me-1' %>
