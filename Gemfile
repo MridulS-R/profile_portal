@@ -27,6 +27,7 @@ gem "sidekiq"
 gem "sidekiq-cron"
 gem 'clamby'
 gem 'rss'
+gem "redis", ">= 4.0.1"
 
 group :development, :test do
   gem "dotenv-rails"

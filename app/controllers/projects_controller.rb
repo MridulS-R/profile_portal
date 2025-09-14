@@ -19,6 +19,13 @@ class ProjectsController < ApplicationController
       if params[:topic].present?
         @projects = @projects.where("topics ILIKE ?", "%#{params[:topic]}%")
       end
+      # Pagination
+      page = params[:page].to_i
+      page = 1 if page <= 0
+      per  = 24
+      offset = (page - 1) * per
+      @projects = @projects.limit(per).offset(offset)
+
       # Build filter options
       @languages = @user.projects.where.not(language: [nil, ""]).distinct.pluck(:language).sort
       begin
@@ -49,4 +56,3 @@ class ProjectsController < ApplicationController
     gh && User.find_by(github_username: gh)
   end
 end
-

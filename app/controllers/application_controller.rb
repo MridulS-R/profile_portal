@@ -26,7 +26,10 @@ class ApplicationController < ActionController::Base
   end
   def load_domain_user
     host = request.host
-    @domain_user = Domain.includes(:user).find_by(host: host)&.user
+    cache_key = "domain_user:#{host}"
+    @domain_user = Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
+      Domain.includes(:user).find_by(host: host)&.user
+    end
   end
 
   def set_theme
