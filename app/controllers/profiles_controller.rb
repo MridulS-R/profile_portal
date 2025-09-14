@@ -13,11 +13,22 @@ class ProfilesController < ApplicationController
   def show
     @user = User.friendly.find(params[:slug])
     # Always show projects for the admin/site owner while keeping profile of @user
-    owner = site_owner
-    owner ||= @user # fallback if SITE_OWNER_GITHUB not configured
-    @projects_owner = owner
-    @projects = owner.projects.order(stars: :desc)
-    @user.increment!(:views_count) if @user.has_attribute?(:views_count)
+    owner = site_owner || @user
+
+    # Conditional GET to enable 304 responses when unchanged
+    latest_project_update = owner.projects.maximum(:updated_at)
+    last_modified = [@user.updated_at, latest_project_update].compact.max
+    etag = [@user.cache_key_with_version, owner.cache_key_with_version, latest_project_update&.to_i].compact
+
+    if stale?(last_modified: last_modified, etag: etag, public: true)
+      page = params[:page].to_i
+      page = 1 if page <= 0
+      per  = 24
+      offset = (page - 1) * per
+      @projects_owner = owner
+      @projects = owner.projects.order(stars: :desc).limit(per).offset(offset)
+      User.increment_counter(:views_count, @user.id) if @user.has_attribute?(:views_count)
+    end
   end
 
   def edit
@@ -73,27 +84,8 @@ class ProfilesController < ApplicationController
       redirect_to edit_profile_path, alert: "Set your GitHub username first." and return
     end
 
-    begin
-      service = GithubSyncService.new(username: current_user.github_username)
-      repos = service.fetch_repos
-      repos.each do |attrs|
-        proj = current_user.projects.find_or_initialize_by(repo_full_name: attrs[:repo_full_name])
-        proj.assign_attributes(attrs)
-        proj.save!
-      end
-      redirect_to public_profile_path(current_user), notice: "GitHub projects synced"
-    rescue Octokit::Unauthorized
-      redirect_to edit_profile_path, alert: "GitHub auth failed. Check GITHUB_TOKEN or try again later." 
-    rescue Octokit::TooManyRequests
-      redirect_to edit_profile_path, alert: "GitHub rate limit exceeded. Set GITHUB_TOKEN to increase limits." 
-    rescue Octokit::NotFound
-      redirect_to edit_profile_path, alert: "GitHub user not found. Verify your GitHub username." 
-    rescue ActiveRecord::RecordNotUnique
-      redirect_to edit_profile_path, alert: "Duplicate repo detected. Contact support to resolve project index uniqueness." 
-    rescue => e
-      Rails.logger.error("[sync_github] #{e.class}: #{e.message}\n#{e.backtrace&.first(5)&.join("\n")}")
-      redirect_to edit_profile_path, alert: "GitHub sync failed: #{e.class}. See logs."
-    end
+    GithubSyncUserJob.perform_later(current_user.id)
+    redirect_to public_profile_path(current_user), notice: "GitHub sync queued. Your projects will update shortly."
   end
 
   def connect_domain; end
@@ -150,9 +142,7 @@ class ProfilesController < ApplicationController
 
     blob = @user.resume.blob
     disp = %w[application/msword application/vnd.openxmlformats-officedocument.wordprocessingml.document].include?(blob.content_type) ? 'attachment' : 'inline'
-    send_data @user.resume.download,
-              filename: blob.filename.to_s,
-              type: blob.content_type,
-              disposition: disp
+    expires_in 1.hour, public: true
+    redirect_to Rails.application.routes.url_helpers.rails_blob_path(@user.resume, disposition: disp, only_path: true)
   end
 end
