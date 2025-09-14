@@ -10,6 +10,11 @@
 
   <div class="col-md-8">
     <h2 class="h5 mb-3">Projects</h2>
+    <% if defined?(@projects_owner) && @projects_owner && @projects_owner != @user %>
+      <div class="alert alert-info py-2 mb-3">
+        Showing admin’s projects for <strong><%= @projects_owner.name %></strong> (@<%= @projects_owner.github_username %>).
+      </div>
+    <% end %>
     <% if @projects.any? %>
       <div class="row g-3">
         <% @projects.each do |p| %>

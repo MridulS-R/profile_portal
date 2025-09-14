@@ -1,45 +1,58 @@
 
-<h1 class="h3 mb-3"><%= t("projects.index.title") %></h1>
-<% if @user.present? %>
-  <p class="text-muted">Showing projects for <strong><%= @user.name %></strong> (@<%= @user.github_username %>)</p>
-  <%= form_with url: demos_path, method: :get, local: true, class: "mb-3" do |f| %>
-    <%= hidden_field_tag :username, @user.github_username %>
-    <div class="input-group">
-      <%= text_field_tag :q, params[:q], placeholder: "Search projects", class: "form-control" %>
-      <button class="btn btn-outline-secondary" type="submit">Search</button>
-    </div>
+<div class="row g-3">
+  <% if @user.present? %>
+    <%= render 'profiles/sidebar', user: @user %>
   <% end %>
-<% end %>
-
-<% if @projects.any? %>
-  <div class="row g-3">
-    <% @projects.each do |p| %>
-      <div class="col-md-6">
-        <a href="<%= p.html_url %>" target="_blank" rel="noopener" class="text-decoration-none text-reset">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <div class="fw-semibold"><%= p.repo_full_name %></div>
-              <div class="text-muted small"><%= p.description %></div>
-              <div class="text-muted small mt-2">Last updated: <%= time_ago_in_words(p.pushed_at) %> ago</div>
-              <div class="mt-2 d-flex gap-2 small">
-                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">⭐ <%= p.stars %></span>
-                <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">🍴 <%= p.forks %></span>
-                <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">🐞 <%= p.open_issues %></span>
-                <% if p.language.present? %><span class="badge bg-light text-dark border"><%= p.language %></span><% end %>
-              </div>
-              <% if p.topics.present? %>
-                <div class="mt-2 d-flex flex-wrap gap-1">
-                  <% Array(p.topics).each do |t| %>
-                    <span class="badge text-bg-light"><%= t %></span>
-                  <% end %>
-                </div>
-              <% end %>
-            </div>
-          </div>
-        </a>
+  <div class="col-md-8">
+    <h1 class="h3 mb-3 section-title"><%= t("projects.index.title") %></h1>
+    <% if defined?(@projects_owner) && @projects_owner %>
+      <div class="alert alert-info py-2">
+        Showing admin’s projects for <strong><%= @projects_owner.name %></strong> (@<%= @projects_owner.github_username %>).
       </div>
     <% end %>
+    <% if @user.present? %>
+      <p class="text-muted">Showing projects for <strong><%= @user.name %></strong> (@<%= @user.github_username %>)</p>
+      <%= form_with url: projects_path, method: :get, local: true, class: "mb-3" do |f| %>
+        <div class="input-group">
+          <%= text_field_tag :q, params[:q], placeholder: "Search projects", class: "form-control" %>
+          <button class="btn btn-outline-secondary" type="submit">Search</button>
+        </div>
+      <% end %>
+    <% end %>
+
+    <% if @projects.any? %>
+      <div class="row g-3">
+      <% @projects.each do |p| %>
+        <div class="col-md-6">
+          <a href="<%= p.html_url %>" target="_blank" rel="noopener" class="text-decoration-none text-reset">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <div class="fw-semibold"><%= p.repo_full_name %></div>
+                <div class="text-muted small"><%= p.description %></div>
+              <% if p.pushed_at.present? %>
+                <div class="text-muted small mt-2">Last updated: <%= time_ago_in_words(p.pushed_at) %> ago</div>
+              <% end %>
+                <div class="mt-2 d-flex gap-2 small">
+                  <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">⭐ <%= p.stars %></span>
+                  <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">🍴 <%= p.forks %></span>
+                  <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">🐞 <%= p.open_issues %></span>
+                  <% if p.language.present? %><span class="badge bg-light text-dark border"><%= p.language %></span><% end %>
+                </div>
+                <% if p.topics.present? %>
+                  <div class="mt-2 d-flex flex-wrap gap-1">
+                    <% Array(p.topics).each do |t| %>
+                      <span class="badge text-bg-light"><%= t %></span>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </a>
+        </div>
+      <% end %>
+      </div>
+    <% else %>
+      <div class="text-muted">No projects yet.</div>
+    <% end %>
   </div>
-<% else %>
-  <div class="text-muted">No projects yet.</div>
-<% end %>
+</div>
