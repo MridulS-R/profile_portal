@@ -25,3 +25,23 @@
   .post-meta { color: #c8cdd3; }
 }
 
+/* Blog index */
+.post-index .header-row { display:flex; align-items:center; justify-content:space-between; gap:.75rem; margin-bottom:.75rem; }
+.post-grid { display:grid; grid-template-columns: repeat(12, 1fr); gap: 1rem; }
+.post-grid .col { grid-column: span 12; }
+@media (min-width: 576px) { .post-grid .col { grid-column: span 6; } }
+@media (min-width: 992px) { .post-grid .col { grid-column: span 4; } }
+.post-card { height:100%; background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:.75rem; display:flex; flex-direction:column; transition: transform .2s ease, box-shadow .2s ease; }
+.post-card:hover { transform: translateY(-2px); box-shadow: 0 1rem 1.5rem rgba(0,0,0,.25); }
+.post-card .body { padding: .9rem; display:flex; flex-direction:column; gap:.35rem; }
+.post-card .title { font-weight:700; line-height:1.25; }
+.post-card .excerpt { color:#cbd5e1; font-size:.95rem; }
+.post-card .meta { color:#9aa4b2; font-size:.85rem; margin-top:.25rem; }
+.tag-pills { display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.4rem; }
+.tag-pill { font-size:.8rem; padding:.15rem .45rem; border-radius:999px; border:1px solid rgba(255,255,255,.18); color:#e5e7eb; background: rgba(255,255,255,.06); text-decoration:none; }
+.tag-pill:hover { background: rgba(255,255,255,.12); color:#fff; }
+
+/* Blog show hero */
+.post-show-hero { position:relative; overflow:hidden; border-radius:.75rem; background: linear-gradient(135deg, rgba(13,110,253,.25), rgba(99,102,241,.25)); padding:1.1rem; margin-bottom:.75rem; }
+.post-show-hero .title { margin:0 0 .25rem; color:#fff; }
+.post-show-hero .meta { color: rgba(255,255,255,.9); }

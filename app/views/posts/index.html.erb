@@ -1,44 +1,40 @@
-<div class="ui stackable grid">
-  <div class="sixteen wide column">
-    <h1 class="ui header"><i class="newspaper outline icon"></i><div class="content">Blog</div></h1>
+<div class="post-index">
+  <div class="header-row">
+    <h1 class="h3 mb-0">Blog</h1>
     <% if user_signed_in? %>
-      <div class="ui right aligned basic segment" style="padding:0;">
-        <%= link_to "New Post", new_post_path, class: "ui primary button" %>
-      </div>
+      <%= link_to "New Post", new_post_path, class: "btn btn-sm btn-primary" %>
     <% end %>
   </div>
 
   <% if @posts.any? %>
-    <div class="sixteen wide column">
-      <div class="ui divided items">
-        <% @posts.each do |post| %>
-          <div class="item">
-            <div class="content">
-              <a class="header" href="<%= post_path(post) %>"><%= post.title %></a>
-              <div class="meta">
-                <span><%= time_ago_in_words(post.published_at || post.created_at) %> ago</span>
-                <span>by <%= post.user.name %></span>
-                <% if table_exists?('categories') && post.category %>
-                  <span>· <%= link_to post.category.name, posts_path(category: post.category.slug) %></span>
-                <% end %>
-              </div>
-              <% if table_exists?('tags') && table_exists?('post_tags') && post.tags.any? %>
-                <div class="extra">
-                  <div class="ui mini labels">
+    <div class="post-grid">
+      <% @posts.each do |post| %>
+        <div class="col">
+          <a href="<%= post_path(post) %>" class="text-decoration-none">
+            <div class="post-card">
+              <div class="body">
+                <div class="title"><%= post.title %></div>
+                <div class="excerpt"><%= truncate(strip_tags(post.body.to_s), length: 180) %></div>
+                <div class="meta">
+                  <%= time_ago_in_words(post.published_at || post.created_at) %> ago · <%= post.user.name %>
+                  <% if table_exists?('categories') && post.category %>
+                    · <%= post.category.name %>
+                  <% end %>
+                </div>
+                <% if table_exists?('tags') && table_exists?('post_tags') && post.tags.any? %>
+                  <div class="tag-pills">
                     <% post.tags.each do |t| %>
-                      <div class="ui basic label"><%= t.name %></div>
+                      <span class="tag-pill"><%= t.name %></span>
                     <% end %>
                   </div>
-                </div>
-              <% end %>
+                <% end %>
+              </div>
             </div>
-          </div>
-        <% end %>
-      </div>
+          </a>
+        </div>
+      <% end %>
     </div>
   <% else %>
-    <div class="sixteen wide column">
-      <div class="ui info message">No posts yet.</div>
-    </div>
+    <div class="text-muted">No posts yet.</div>
   <% end %>
 </div>

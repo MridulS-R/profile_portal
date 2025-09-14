@@ -1,85 +1,74 @@
-<div class="ui stackable grid">
-  <div class="sixteen wide column">
-    <div class="ui grid">
-      <div class="twelve wide column">
-        <div class="post-header">
-          <h1 class="ui header" style="margin-bottom:.25rem;"><%= @post.title %></h1>
-          <div class="post-meta">Published <%= time_ago_in_words(@post.published_at || @post.created_at) %> ago by <%= @post.user.name %></div>
-        </div>
-      </div>
-      <div class="four wide right aligned column">
-        <div class="ui buttons">
-          <%= link_to "Back", posts_path, class: "ui button" %>
-          <% if user_signed_in? && @post.user_id == current_user.id %>
-            <%= link_to "Edit", edit_post_path(@post), class: "ui secondary button" %>
-            <%= button_to "Delete", post_path(@post), method: :delete, data: { confirm: "Delete this post?" }, class: "ui red button" %>
-          <% end %>
-        </div>
-      </div>
-    </div>
-    <div class="ui raised very padded segment post-segment">
-      <div class="post-content"><%= @post.rendered_body.html_safe %></div>
-    </div>
+<div class="post-show">
+  <div class="post-show-hero">
+    <h1 class="title"><%= @post.title %></h1>
+    <div class="meta">Published <%= time_ago_in_words(@post.published_at || @post.created_at) %> ago by <%= @post.user.name %></div>
+  </div>
 
-    <% if table_exists?('post_reactions') %>
-      <div class="ui tiny buttons">
-        <%= button_to '👍 Like', react_post_path(@post, kind: 'like'), method: :post, class: 'ui button' %>
-        <div class="or"></div>
-        <%= button_to '👎 Dislike', react_post_path(@post, kind: 'dislike'), method: :post, class: 'ui button' %>
-      </div>
-      <div class="ui horizontal list">
-        <div class="item"><div class="ui basic label">Likes: <%= @post.reactions.where(kind: 'like').count %></div></div>
-        <div class="item"><div class="ui basic label">Dislikes: <%= @post.reactions.where(kind: 'dislike').count %></div></div>
-      </div>
-    <% end %>
-
-    <% if table_exists?('post_comments') %>
-      <h3 class="ui header">Comments</h3>
-      <% if @post.user.respond_to?(:allow_comments) && !@post.user.allow_comments %>
-        <div class="ui warning message">Comments are disabled by the author.</div>
-      <% else %>
-        <% if user_signed_in? %>
-          <%= form_with url: post_post_comments_path(@post), method: :post, local: true, html: { class: 'ui reply form' } do |f| %>
-            <div class="field">
-              <%= f.text_area :body, rows: 3, placeholder: 'Add a comment...' %>
-            </div>
-            <%= f.submit 'Post Comment', class: 'ui primary button' %>
-          <% end %>
-        <% else %>
-          <div class="ui info message">Please log in to comment.</div>
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <div class="d-flex gap-2 flex-wrap">
+      <% if table_exists?('categories') && @post.category %>
+        <span class="tag-pill"><%= @post.category.name %></span>
+      <% end %>
+      <% if table_exists?('tags') && table_exists?('post_tags') %>
+        <% @post.tags.each do |t| %>
+          <span class="tag-pill"><%= t.name %></span>
         <% end %>
       <% end %>
+    </div>
+    <div class="d-flex gap-2">
+      <%= link_to "Back", posts_path, class: "btn btn-sm btn-outline-light" %>
+      <% if user_signed_in? && @post.user_id == current_user.id %>
+        <%= link_to "Edit", edit_post_path(@post), class: "btn btn-sm btn-outline-secondary" %>
+        <%= button_to "Delete", post_path(@post), method: :delete, data: { confirm: "Delete this post?" }, class: "btn btn-sm btn-danger" %>
+      <% end %>
+    </div>
+  </div>
 
-      <div class="ui comments">
-        <% @post.comments.includes(:user).order(created_at: :desc).each do |c| %>
-          <div class="comment">
-            <div class="content">
-              <a class="author"><%= c.user.name %></a>
-              <div class="metadata"><span><%= time_ago_in_words(c.created_at) %> ago</span></div>
-              <div class="text"><%= simple_format(c.body) %></div>
-              <% if user_signed_in? && (c.user_id == current_user.id || @post.user_id == current_user.id) %>
-                <div class="actions">
-                  <%= button_to 'Delete', post_post_comment_path(@post, c), method: :delete, class: 'ui tiny red basic button' %>
-                </div>
-              <% end %>
-            </div>
+  <div class="ui raised very padded segment post-segment">
+    <div class="post-content"><%= @post.rendered_body.html_safe %></div>
+  </div>
+
+  <% if table_exists?('post_reactions') %>
+    <div class="my-2 d-flex align-items-center gap-2 flex-wrap">
+      <%= button_to '👍 Like', react_post_path(@post, kind: 'like'), method: :post, class: 'btn btn-sm btn-outline-light' %>
+      <%= button_to '👎 Dislike', react_post_path(@post, kind: 'dislike'), method: :post, class: 'btn btn-sm btn-outline-light' %>
+      <span class="tag-pill">Likes: <%= @post.reactions.where(kind: 'like').count %></span>
+      <span class="tag-pill">Dislikes: <%= @post.reactions.where(kind: 'dislike').count %></span>
+    </div>
+  <% end %>
+
+  <% if table_exists?('post_comments') %>
+    <h3 class="h5">Comments</h3>
+    <% if @post.user.respond_to?(:allow_comments) && !@post.user.allow_comments %>
+      <div class="alert alert-warning">Comments are disabled by the author.</div>
+    <% else %>
+      <% if user_signed_in? %>
+        <%= form_with url: post_post_comments_path(@post), method: :post, local: true do |f| %>
+          <div class="mb-2">
+            <%= f.text_area :body, rows: 3, placeholder: 'Add a comment...', class: 'form-control' %>
           </div>
+          <%= f.submit 'Post Comment', class: 'btn btn-primary btn-sm' %>
         <% end %>
-      </div>
+      <% else %>
+        <div class="alert alert-info">Please log in to comment.</div>
+      <% end %>
     <% end %>
-  </div>
-  <div class="sixteen wide column">
-    <% if table_exists?('categories') || (table_exists?('tags') && table_exists?('post_tags')) %>
-      <div class="ui horizontal list">
-        <% if table_exists?('categories') && @post.category %>
-          <div class="item"><div class="ui label"><i class="tag icon"></i> <%= @post.category.name %></div></div>
-        <% end %>
-        <% if table_exists?('tags') && table_exists?('post_tags') %>
-          <% @post.tags.each do |t| %>
-            <div class="item"><%= link_to t.name, posts_path(tag: t.slug), class: 'ui basic label' %></div>
+
+    <div class="mt-3">
+      <% @post.comments.includes(:user).order(created_at: :desc).each do |c| %>
+        <div class="mb-3 p-2 border rounded">
+          <div class="d-flex justify-content-between">
+            <strong><%= c.user.name %></strong>
+            <small class="text-muted"><%= time_ago_in_words(c.created_at) %> ago</small>
+          </div>
+          <div><%= simple_format(c.body) %></div>
+          <% if user_signed_in? && (c.user_id == current_user.id || @post.user_id == current_user.id) %>
+            <div class="mt-1">
+              <%= button_to 'Delete', post_post_comment_path(@post, c), method: :delete, class: 'btn btn-sm btn-outline-danger' %>
+            </div>
           <% end %>
-        <% end %>
-      </div>
-    <% end %>
-  </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 </div>
