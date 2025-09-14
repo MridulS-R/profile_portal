@@ -1,32 +1,22 @@
 (() => {
   function buildCard(a) {
     const col = document.createElement('div');
-    col.className = 'col-md-6';
+    col.className = 'col-12 col-sm-6 col-lg-4';
     col.innerHTML = `
-      <div class="card h-100 shadow-sm">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title"></h5>
-          <div class="meta small text-muted mb-2"></div>
-          <div class="thumb"></div>
+      <div class="card card-news h-100">
+        <div class="card-body">
+          <h5 class="card-title mt-1"></h5>
+          <div class="meta mb-2"></div>
           <p class="card-text"></p>
           <div class="mt-auto d-flex justify-content-between align-items-center">
             <small class="text-muted time"></small>
-            <a class="btn btn-outline-primary btn-sm" target="_blank" rel="noopener">Read More</a>
+            <a class="btn btn-soft-primary btn-sm" target="_blank" rel="noopener">Read More</a>
           </div>
         </div>
       </div>`;
     col.querySelector('.card-title').textContent = a.title || 'Untitled';
-    if (a.source) col.querySelector('.meta').textContent = `Source: ${a.source}`;
-    else col.querySelector('.meta').remove();
-    if (a.image_url) {
-      const img = document.createElement('img');
-      img.src = a.image_url;
-      img.alt = 'thumbnail';
-      img.className = 'img-fluid rounded mb-2';
-      col.querySelector('.thumb').appendChild(img);
-    } else {
-      col.querySelector('.thumb').remove();
-    }
+    const metaEl = col.querySelector('.meta');
+    metaEl.textContent = a.source ? `Source: ${a.source}` : '';
     col.querySelector('.card-text').textContent = a.description || '';
     const link = col.querySelector('a');
     link.href = a.url || '#';
@@ -46,14 +36,6 @@
   function buildCompactItem(a) {
     const item = document.createElement('div');
     item.className = 'news-item';
-    if (a.image_url) {
-      const thumb = document.createElement('div');
-      thumb.className = 'thumb';
-      const img = document.createElement('img');
-      img.src = a.image_url; img.alt = 'thumbnail';
-      thumb.appendChild(img);
-      item.appendChild(thumb);
-    }
     const body = document.createElement('div');
     const title = document.createElement('div');
     title.className = 'title';
@@ -109,6 +91,7 @@
   async function loadNews() {
     const list = document.getElementById('news-list');
     const top = document.getElementById('news-top');
+    const hero = document.getElementById('news-hero');
     const pagination = document.getElementById('news-pagination');
     if (!list) return;
     const url = new URL(window.location.href);
@@ -120,6 +103,29 @@
     try {
       const res = await fetch(jsonUrl, { headers: { 'Accept': 'application/json' } });
       const data = await res.json();
+      // Render hero from first category article (fallback to first top story)
+      if (hero) {
+        const heroEl = hero.querySelector('.news-hero');
+        const content = heroEl.querySelector('.content');
+        const titleEl = content.querySelector('.title');
+        const metaEl = content.querySelector('.meta');
+        const actionsEl = content.querySelector('.actions');
+        let heroArticle = (data.articles && data.articles[0]) || (data.top_stories && data.top_stories[0] && data.top_stories[0].articles && data.top_stories[0].articles[0]) || null;
+        if (heroArticle) {
+          titleEl.textContent = heroArticle.title || 'Untitled';
+          const parts = [];
+          if (heroArticle.source) parts.push(heroArticle.source);
+          if (heroArticle.published_at) { try { parts.push(timeSince(new Date(heroArticle.published_at)) + ' ago'); } catch(_){} }
+          metaEl.textContent = parts.join(' • ');
+          actionsEl.innerHTML = '';
+          const btn = document.createElement('a');
+          btn.href = heroArticle.url || '#';
+          btn.target = '_blank'; btn.rel = 'noopener';
+          btn.className = 'btn btn-soft-primary btn-sm';
+          btn.textContent = 'Read More';
+          actionsEl.appendChild(btn);
+        }
+      }
       if (top) {
         top.innerHTML = '';
         if (data.top_stories && data.top_stories.length) {
@@ -140,7 +146,8 @@
           list.innerHTML = '<div class="text-muted">No news found for this category.</div>';
         } else {
           const frag = document.createDocumentFragment();
-          data.articles.forEach(a => frag.appendChild(buildCompactItem(a)));
+          const items = data.articles.slice( (hero ? 1 : 0) );
+          items.forEach(a => frag.appendChild(buildCompactItem(a)));
           list.appendChild(frag);
         }
       } else {
@@ -153,7 +160,8 @@
           list.appendChild(empty);
         } else {
           const frag = document.createDocumentFragment();
-          data.articles.forEach(a => frag.appendChild(buildCard(a)));
+          const items = data.articles.slice( (hero ? 1 : 0) );
+          items.forEach(a => frag.appendChild(buildCard(a)));
           list.appendChild(frag);
         }
       }

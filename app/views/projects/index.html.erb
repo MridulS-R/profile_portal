@@ -1,58 +1,90 @@
 
-<div class="row g-3">
+<div class="ui stackable grid">
   <% if @user.present? %>
-    <%= render 'profiles/sidebar', user: @user %>
+    <div class="four wide column">
+      <%= render 'profiles/sidebar', user: @user %>
+    </div>
   <% end %>
-  <div class="col-md-8">
-    <h1 class="h3 mb-3 section-title"><%= t("projects.index.title") %></h1>
+  <div class="twelve wide column">
+    <h1 class="ui header"><i class="code icon"></i> <div class="content"><%= t("projects.index.title") %></div></h1>
     <% if defined?(@projects_owner) && @projects_owner %>
-      <div class="alert alert-info py-2">
-        Showing admin’s projects for <strong><%= @projects_owner.name %></strong> (@<%= @projects_owner.github_username %>).
-      </div>
+      <div class="ui info message">Showing admin’s projects for <strong><%= @projects_owner.name %></strong> (@<%= @projects_owner.github_username %>).</div>
     <% end %>
     <% if @user.present? %>
-      <p class="text-muted">Showing projects for <strong><%= @user.name %></strong> (@<%= @user.github_username %>)</p>
-      <%= form_with url: projects_path, method: :get, local: true, class: "mb-3" do |f| %>
-        <div class="input-group">
-          <%= text_field_tag :q, params[:q], placeholder: "Search projects", class: "form-control" %>
-          <button class="btn btn-outline-secondary" type="submit">Search</button>
+      <div class="ui small grey text">Showing projects for <strong><%= @user.name %></strong> (@<%= @user.github_username %>)</div>
+      <%= form_with url: projects_path, method: :get, local: true, html: { class: "ui form" } do |f| %>
+        <div class="fields">
+          <div class="ten wide field">
+            <div class="ui left icon input fluid">
+              <i class="search icon"></i>
+              <%= text_field_tag :q, params[:q], placeholder: "Search projects", autocomplete: "off" %>
+            </div>
+          </div>
+          <div class="three wide field">
+            <div class="ui selection dropdown fluid">
+              <input type="hidden" name="lang" value="<%= params[:lang] || 'all' %>">
+              <i class="dropdown icon"></i>
+              <div class="default text">Language</div>
+              <div class="menu">
+                <div class="item" data-value="all">All</div>
+                <% @languages.each do |lng| %>
+                  <div class="item" data-value="<%= lng %>"><%= lng %></div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <div class="three wide field">
+            <div class="ui selection dropdown fluid">
+              <input type="hidden" name="topic" value="<%= params[:topic] %>">
+              <i class="dropdown icon"></i>
+              <div class="default text">Topic</div>
+              <div class="menu">
+                <% @all_topics.each do |t| %>
+                  <div class="item" data-value="<%= t %>"><%= t %></div>
+                <% end %>
+              </div>
+            </div>
+          </div>
         </div>
+        <button class="ui primary button" type="submit">Filter</button>
       <% end %>
     <% end %>
 
     <% if @projects.any? %>
-      <div class="row g-3">
-      <% @projects.each do |p| %>
-        <div class="col-md-6">
-          <a href="<%= p.html_url %>" target="_blank" rel="noopener" class="text-decoration-none text-reset">
-            <div class="card h-100 shadow-sm">
-              <div class="card-body">
-                <div class="fw-semibold"><%= p.repo_full_name %></div>
-                <div class="text-muted small"><%= p.description %></div>
-              <% if p.pushed_at.present? %>
-                <div class="text-muted small mt-2">Last updated: <%= time_ago_in_words(p.pushed_at) %> ago</div>
+      <div class="ui three stackable cards">
+        <% @projects.each do |p| %>
+          <a class="ui card" href="<%= p.html_url %>" target="_blank" rel="noopener">
+            <div class="content">
+              <div class="header"><%= p.repo_full_name %></div>
+              <% if p.language.present? %>
+                <div class="meta"><i class="circle icon" style="color:#999"></i> <%= p.language %></div>
               <% end %>
-                <div class="mt-2 d-flex gap-2 small">
-                  <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">⭐ <%= p.stars %></span>
-                  <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">🍴 <%= p.forks %></span>
-                  <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle">🐞 <%= p.open_issues %></span>
-                  <% if p.language.present? %><span class="badge bg-light text-dark border"><%= p.language %></span><% end %>
-                </div>
-                <% if p.topics.present? %>
-                  <div class="mt-2 d-flex flex-wrap gap-1">
-                    <% Array(p.topics).each do |t| %>
-                      <span class="badge text-bg-light"><%= t %></span>
-                    <% end %>
-                  </div>
-                <% end %>
+              <div class="description"><%= p.description %></div>
+            </div>
+            <div class="extra content">
+              <% if p.pushed_at.present? %>
+                <span class="right floated">Updated <%= time_ago_in_words(p.pushed_at) %> ago</span>
+              <% end %>
+              <div class="ui tiny labels">
+                <div class="ui label"><i class="star icon"></i><%= p.stars.to_i %></div>
+                <div class="ui label"><i class="fork icon"></i><%= p.forks.to_i %></div>
+                <div class="ui label"><i class="bug icon"></i><%= p.open_issues.to_i %></div>
               </div>
             </div>
+            <% if p.topics.present? %>
+              <div class="extra content">
+                <div class="ui mini labels">
+                  <% Array(p.topics).each do |t| %>
+                    <div class="ui basic label"><%= t %></div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
           </a>
-        </div>
-      <% end %>
+        <% end %>
       </div>
     <% else %>
-      <div class="text-muted">No projects yet.</div>
+      <div class="ui info message">No projects yet.</div>
     <% end %>
   </div>
 </div>

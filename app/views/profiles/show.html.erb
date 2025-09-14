@@ -2,7 +2,9 @@
 <div class="row g-4">
   <% if @user.banner_url.present? %>
     <div class="col-12">
-      <img src="<%= @user.banner_url %>" alt="Banner" class="img-fluid rounded border">
+      <div class="banner-wrap border">
+        <img src="<%= @user.banner_url %>" alt="Banner">
+      </div>
     </div>
   <% end %>
 

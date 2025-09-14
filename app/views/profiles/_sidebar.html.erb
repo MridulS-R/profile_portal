@@ -1,59 +1,76 @@
-<div class="col-md-4">
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <div class="d-flex align-items-center gap-3">
-        <% u = local_assigns[:user] || @user %>
-        <% if u&.avatar_url.present? %>
-          <img src="<%= u.avatar_url %>" class="rounded-circle border" alt="Avatar" width="56" height="56">
-        <% end %>
-        <div>
-          <h1 class="h4 mb-0"><%= u&.name %></h1>
-          <% if u&.github_username.present? %>
-            <div class="text-muted">@<%= u.github_username %></div>
+<div class="ui card fluid">
+  <div class="content">
+    <% u = local_assigns[:user] || @user %>
+    <div class="header"><%= u&.name %></div>
+    <div class="meta">
+      <% if u&.github_username.present? %>
+        @<%= u.github_username %>
+      <% end %>
+    </div>
+  </div>
+  <div class="content">
+    <div class="ui small feed">
+      <% if u&.avatar_url.present? %>
+        <div class="event">
+          <div class="label"><img src="<%= u.avatar_url %>" alt="Avatar"></div>
+          <div class="content"><div class="summary">Avatar</div></div>
+        </div>
+      <% end %>
+      <% if u&.bio.present? %>
+        <div class="event">
+          <div class="label"><i class="info circle icon"></i></div>
+          <div class="content"><div class="summary"><%= u.bio %></div></div>
+        </div>
+      <% end %>
+      <% if u&.respond_to?(:location) && u.location.present? %>
+        <div class="event">
+          <div class="label"><i class="map marker alternate icon"></i></div>
+          <div class="content"><div class="summary"><%= u.location %></div></div>
+        </div>
+      <% end %>
+      <% if u&.respond_to?(:skills) && u.skills.present? %>
+        <div class="event">
+          <div class="label"><i class="laptop code icon"></i></div>
+          <div class="content"><div class="summary"><%= u.skills %></div></div>
+        </div>
+      <% end %>
+      <% if u&.respond_to?(:views_count) %>
+        <div class="event">
+          <div class="label"><i class="eye icon"></i></div>
+          <div class="content"><div class="summary">Views: <%= u.views_count %></div></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="content">
+    <div class="ui relaxed divided list">
+      <% if u&.website.present? %><div class="item"><i class="globe icon"></i><div class="content"><a href="<%= u.website %>" target="_blank" rel="noopener">Website</a></div></div><% end %>
+      <% if u&.github_url.present? %><div class="item"><i class="github icon"></i><div class="content"><a href="<%= u.github_url %>" target="_blank" rel="noopener">GitHub</a></div></div><% end %>
+      <% if u&.twitter_url.present? %><div class="item"><i class="twitter icon"></i><div class="content"><a href="<%= u.twitter_url %>" target="_blank" rel="noopener">Twitter/X</a></div></div><% end %>
+      <% if u&.linkedin_url.present? %><div class="item"><i class="linkedin icon"></i><div class="content"><a href="<%= u.linkedin_url %>" target="_blank" rel="noopener">LinkedIn</a></div></div><% end %>
+      <% if u&.youtube_url.present? %><div class="item"><i class="youtube icon"></i><div class="content"><a href="<%= u.youtube_url %>" target="_blank" rel="noopener">YouTube</a></div></div><% end %>
+    </div>
+  </div>
+  <div class="extra content">
+    <div class="ui small buttons">
+      <%= link_to "View Projects", projects_path(username: u&.github_username), class: "ui primary button" %>
+      <% if u&.resume&.attached? %>
+        <%= link_to "Download Resume", profile_resume_path(u), class: "ui button" %>
+      <% end %>
+    </div>
+    <% if u&.respond_to?(:resume_scan_status) && u.resume.attached? %>
+      <div class="ui horizontal list" style="margin-top:.5rem;">
+        <div class="item">
+          <% case u.resume_scan_status %>
+          <% when 'pending' %>
+            <div class="ui yellow label">Resume scan: pending</div>
+          <% when 'infected' %>
+            <div class="ui red label">Resume scan: infected</div>
+          <% when 'clean' %>
+            <div class="ui green label">Resume scan: clean</div>
           <% end %>
         </div>
       </div>
-      <% if u&.bio.present? %>
-        <p class="mt-3 mb-0"><%= u.bio %></p>
-      <% end %>
-      <% if u&.respond_to?(:location) && u.location.present? %>
-        <p class="mt-2 mb-0"><span class="fw-semibold">Location:</span> <%= u.location %></p>
-      <% end %>
-      <% if u&.respond_to?(:skills) && u.skills.present? %>
-        <p class="mt-2 mb-0"><span class="fw-semibold">Skills:</span> <%= u.skills %></p>
-      <% end %>
-      <% if u&.respond_to?(:views_count) %>
-        <p class="mt-2 mb-0 text-muted small">Views: <%= u.views_count %></p>
-      <% end %>
-      <hr>
-      <ul class="list-unstyled small mb-3">
-        <% if u&.website.present? %><li><a href="<%= u.website %>" target="_blank" rel="noopener">Website</a></li><% end %>
-        <% if u&.github_url.present? %><li><a href="<%= u.github_url %>" target="_blank" rel="noopener">GitHub</a></li><% end %>
-        <% if u&.twitter_url.present? %><li><a href="<%= u.twitter_url %>" target="_blank" rel="noopener">Twitter/X</a></li><% end %>
-        <% if u&.linkedin_url.present? %><li><a href="<%= u.linkedin_url %>" target="_blank" rel="noopener">LinkedIn</a></li><% end %>
-        <% if u&.youtube_url.present? %><li><a href="<%= u.youtube_url %>" target="_blank" rel="noopener">YouTube</a></li><% end %>
-      </ul>
-      <div class="d-flex flex-wrap gap-2">
-        <%= link_to "View Projects", projects_path(username: u&.github_username), class: "btn btn-primary btn-sm" %>
-        <% if u&.respond_to?(:domains) && u.domains.any? %>
-          <% u.domains.each do |d| %>
-            <a href="http://<%= d.host %>" class="btn btn-outline-secondary btn-sm">Visit <%= d.host %></a>
-          <% end %>
-        <% end %>
-        <% if u&.resume&.attached? %>
-          <%= link_to "Download Resume", profile_resume_path(u), class: "btn btn-outline-primary btn-sm" %>
-        <% end %>
-        <% if u&.respond_to?(:resume_scan_status) && u.resume.attached? %>
-          <% case u.resume_scan_status %>
-          <% when 'pending' %>
-            <span class="badge rounded-pill text-bg-warning align-self-center">Resume scan: pending</span>
-          <% when 'infected' %>
-            <span class="badge rounded-pill text-bg-danger align-self-center">Resume scan: infected</span>
-          <% when 'clean' %>
-            <span class="badge rounded-pill text-bg-success align-self-center">Resume scan: clean</span>
-          <% end %>
-        <% end %>
-      </div>
-    </div>
+    <% end %>
   </div>
 </div>

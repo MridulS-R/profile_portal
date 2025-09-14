@@ -18,12 +18,44 @@
     </div>
   </div>
 
+  <div id="news-hero" class="col-12 mb-3">
+    <div class="news-hero">
+      <div class="overlay"></div>
+      <div class="content">
+        <div class="title">Loading top headline…</div>
+        <div class="meta"></div>
+        <div class="actions"></div>
+      </div>
+    </div>
+  </div>
+
   <div id="news-top" class="col-12 mb-3">
-    <div class="text-muted">Loading top stories…</div>
+    <div class="row g-3">
+      <% 3.times do %>
+        <div class="col-md-4">
+          <div class="card card-news h-100">
+            <div class="card-body">
+              <div class="skeleton" style="height:18px;width:80%;border-radius:6px;margin-top:.5rem;"></div>
+              <div class="skeleton" style="height:12px;width:50%;border-radius:6px;margin-top:.5rem;"></div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
   </div>
 
   <div id="news-list" class="row g-3" data-category="<%= @category %>">
-    <div class="col-12 text-muted">Loading news…</div>
+    <% 6.times do %>
+      <div class="col-md-6">
+        <div class="card card-news h-100">
+          <div class="card-body">
+            <div class="skeleton" style="height:18px;width:85%;border-radius:6px;margin-top:.5rem;"></div>
+            <div class="skeleton" style="height:12px;width:60%;border-radius:6px;margin-top:.5rem;"></div>
+            <div class="skeleton" style="height:12px;width:40%;border-radius:6px;margin-top:.5rem;"></div>
+          </div>
+        </div>
+      </div>
+    <% end %>
   </div>
   <div id="news-pagination" class="col-12 mt-3">
     <div class="pagination-controls">
