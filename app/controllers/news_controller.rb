@@ -10,8 +10,13 @@ class NewsController < ApplicationController
       return
     end
 
-    service = NewsService.new
-    @articles = service.top_headlines(category: @category)
+    begin
+      service = NewsService.new
+      @articles = service.top_headlines(category: @category)
+    rescue => e
+      Rails.logger.error("[NewsController#index] #{e.class}: #{e.message}")
+      @articles = []
+      flash.now[:alert] = 'Unable to load news at this time.'
+    end
   end
 end
-

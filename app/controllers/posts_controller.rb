@@ -4,16 +4,32 @@ class PostsController < ApplicationController
   before_action :set_owned_post, only: [:edit, :update, :destroy]
 
   def index
-    @posts = Post.published.recent.includes(:user, :tags, :category)
     # Determine which user sidebar to show (domain user → site owner → current user → first)
     @user = @domain_user || site_owner || current_user || User.first
-    if params[:tag].present?
-      @tag = Tag.friendly.find(params[:tag]) rescue nil
-      @posts = @posts.joins(:tags).where(tags: { id: @tag.id }) if @tag
-    end
-    if params[:category].present?
-      @category = Category.friendly.find(params[:category]) rescue nil
-      @posts = @posts.where(category: @category) if @category
+    @posts = []
+    begin
+      scope = Post.published.recent.includes(:user, :tags, :category)
+      if params[:tag].present?
+        begin
+          @tag = Tag.friendly.find(params[:tag])
+          scope = scope.joins(:tags).where(tags: { id: @tag.id }) if @tag
+        rescue StandardError
+          @tag = nil
+        end
+      end
+      if params[:category].present?
+        begin
+          @category = Category.friendly.find(params[:category])
+          scope = scope.where(category: @category) if @category
+        rescue StandardError
+          @category = nil
+        end
+      end
+      @posts = scope
+    rescue ActiveRecord::StatementInvalid, NameError => e
+      Rails.logger.error("[PostsController#index] #{e.class}: #{e.message}")
+      flash.now[:alert] = 'Blog is initializing or unavailable. Please ensure migrations have run.'
+      @posts = []
     end
   end
 
@@ -51,6 +67,9 @@ class PostsController < ApplicationController
   private
   def set_post
     @post = Post.friendly.find(params[:id])
+  rescue StandardError => e
+    Rails.logger.error("[PostsController#set_post] #{e.class}: #{e.message}")
+    redirect_to posts_path, alert: 'Post not found.'
   end
 
   def set_owned_post

@@ -1,3 +1,9 @@
+begin
+  require 'faraday/retry'
+rescue LoadError
+  # faraday-retry not available; connection will be created without retry middleware
+end
+
 class NewsService
   CATEGORIES = %w[business entertainment general health science sports technology].freeze
   DEFAULT_COUNTRY = ENV.fetch('NEWSAPI_COUNTRY', 'us')
@@ -5,7 +11,7 @@ class NewsService
   def initialize(api_key: ENV['NEWSAPI_KEY'])
     @api_key = api_key
     @conn = Faraday.new(url: 'https://newsapi.org/v2') do |f|
-      f.request :retry, max: 2, interval: 0.1, backoff_factor: 2
+      f.request :retry, max: 2, interval: 0.1, backoff_factor: 2 if defined?(Faraday::Retry)
       f.adapter Faraday.default_adapter
     end
   end
@@ -28,4 +34,3 @@ class NewsService
     []
   end
 end
-
