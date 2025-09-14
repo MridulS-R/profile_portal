@@ -1,0 +1,43 @@
+<div class="row g-3">
+  <div class="col-12 d-flex justify-content-between align-items-center">
+    <h1 class="h3 mb-0">Latest News</h1>
+  </div>
+
+  <div class="col-12">
+    <ul class="nav nav-pills mb-3">
+      <% @categories.each do |cat| %>
+        <% active = (cat == @category) %>
+        <li class="nav-item me-2">
+          <%= link_to cat.titleize, root_path(category: cat), class: "nav-link #{'active' if active}" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <% if @articles.any? %>
+    <% @articles.each do |a| %>
+      <div class="col-md-6">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title"><%= a['title'] %></h5>
+            <% if a['source'] && a['source']['name'].present? %>
+              <div class="small text-muted mb-2">Source: <%= a['source']['name'] %></div>
+            <% end %>
+            <% if a['urlToImage'].present? %>
+              <img src="<%= a['urlToImage'] %>" alt="thumbnail" class="img-fluid rounded mb-2">
+            <% end %>
+            <p class="card-text"><%= a['description'] %></p>
+            <div class="mt-auto d-flex justify-content-between align-items-center">
+              <% if a['publishedAt'].present? %>
+                <small class="text-muted"><%= time_ago_in_words(Time.zone.parse(a['publishedAt']) rescue Time.now) %> ago</small>
+              <% end %>
+              <%= link_to 'Read More', a['url'], class: 'btn btn-outline-primary btn-sm', target: '_blank', rel: 'noopener' %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="col-12 text-muted">No news found for this category.</div>
+  <% end %>
+</div>

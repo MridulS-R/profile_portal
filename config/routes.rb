@@ -11,7 +11,7 @@ Rails.application.routes.draw do
     # sidekiq not available; skip
   end
 
-  root "posts#index"
+  root "news#index"
 
   devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
 
