@@ -24,7 +24,10 @@ Rails.application.routes.draw do
   # Home shows profile + projects
   root "profiles#home"
 
-  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
+  devise_for :users, controllers: {
+    omniauth_callbacks: "users/omniauth_callbacks",
+    registrations: "users/registrations"
+  }
 
   get "/u/:slug", to: "profiles#show", as: :public_profile
   get "/u/:slug/resume", to: "profiles#resume", as: :profile_resume
