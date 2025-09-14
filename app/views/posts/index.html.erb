@@ -6,6 +6,30 @@
     <% end %>
   </div>
 
+  <% if @ai_ml_articles.present? %>
+    <div class="ui raised segment mb-3">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h2 class="h5 mb-0">Top AI/ML Articles</h2>
+        <small class="text-muted">From across the web</small>
+      </div>
+      <div class="news-compact">
+        <% @ai_ml_articles.each do |a| %>
+          <div class="news-item">
+            <div class="flex-grow-1">
+              <a href="<%= a.url %>" target="_blank" rel="noopener" class="text-decoration-none"><span class="title"><%= a.title %></span></a>
+              <div class="meta">
+                <%= a.source %>
+                <% if a.published_at %>
+                  · <%= time_ago_in_words(a.published_at) %> ago
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
   <% if @posts.any? %>
     <div class="post-grid">
       <% @posts.each do |post| %>

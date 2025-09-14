@@ -7,6 +7,13 @@ class PostsController < ApplicationController
     # Determine which user sidebar to show (domain user → site owner → current user → first)
     @user = @domain_user || site_owner || current_user || User.first
     @posts = []
+    # Fetch AI/ML articles from online sources (NewsAPI or RSS fallback)
+    begin
+      @ai_ml_articles = AiMlAggregator.fetch_top(limit: 8)
+    rescue StandardError => e
+      Rails.logger.info("[PostsController#index] AI/ML list unavailable: #{e.class}: #{e.message}")
+      @ai_ml_articles = []
+    end
     begin
       scope = Post.published.recent.includes(:user, :tags, :category)
       if params[:tag].present?
