@@ -59,10 +59,9 @@
     const list = document.getElementById('news-list');
     if (!list) return;
     const url = new URL(window.location.href);
-    url.pathname = (url.pathname.endsWith('/')) ? url.pathname : url.pathname + '/';
-    url.pathname = url.pathname.replace(/\/$/, '');
     url.searchParams.set('category', list.dataset.category || 'general');
-    const jsonUrl = `${url.pathname}.json${url.search}`;
+    url.searchParams.set('format', 'json');
+    const jsonUrl = `${url.pathname}${url.search}`;
     try {
       const res = await fetch(jsonUrl, { headers: { 'Accept': 'application/json' } });
       const data = await res.json();
@@ -85,4 +84,3 @@
   document.addEventListener('turbo:load', loadNews);
   document.addEventListener('DOMContentLoaded', loadNews);
 })();
-
