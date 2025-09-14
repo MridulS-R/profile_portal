@@ -11,6 +11,19 @@ class ApplicationController < ActionController::Base
   end
 
   private
+  # Prefer a deterministic landing page after login to avoid edge-cases
+  # hitting the generic home route.
+  def after_sign_in_path_for(resource)
+    begin
+      return public_profile_path(resource)
+    rescue
+      return root_path
+    end
+  end
+
+  def after_sign_out_path_for(_resource_or_scope)
+    root_path
+  end
   def load_domain_user
     host = request.host
     @domain_user = Domain.includes(:user).find_by(host: host)&.user
