@@ -68,13 +68,7 @@
                   ⋯
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="guestMenu">
-                  <li><%= link_to "Login", new_user_session_path, class: "dropdown-item" %></li>
-                  <% if defined?(user_github_omniauth_authorize_path) && provider_enabled?(:github) %>
-                    <li>
-                      <%= button_to "Sign in with GitHub", user_github_omniauth_authorize_path, method: :post, form: { class: 'd-inline' }, class: "dropdown-item", data: { turbo: false } %>
-                    </li>
-                  <% end %>
-                  <li><%= link_to "Sign up", new_user_registration_path, class: "dropdown-item" %></li>
+                  <li><%= link_to "Sign in", new_user_session_path, class: "dropdown-item" %></li>
                 </ul>
               <% end %>
             </div>
@@ -104,5 +98,12 @@
         document.addEventListener('DOMContentLoaded', initSemantic);
       })();
     </script>
+    <style>
+      /* Hide Bootstrap caret triangle for header dropdown toggles */
+      #accountMenu.dropdown-toggle::after,
+      #guestMenu.dropdown-toggle::after {
+        display: none !important;
+      }
+    </style>
   </body>
   </html>
