@@ -29,14 +29,14 @@ class ProfilesController < ApplicationController
       if attrs[:current_password].blank?
         @user.errors.add(:current_password, "can't be blank")
         @domains = @user.domains
-        render :edit, status: :unprocessable_entity and return
+        render :edit, status: :unprocessable_content and return
       end
       if @user.update_with_password(attrs)
         bypass_sign_in(@user)
         redirect_to public_profile_path(@user), notice: "Profile and password updated"
       else
         @domains = @user.domains
-        render :edit, status: :unprocessable_entity
+        render :edit, status: :unprocessable_content
       end
     else
       # Handle resume attachment/removal
@@ -58,7 +58,7 @@ class ProfilesController < ApplicationController
         redirect_to public_profile_path(@user), notice: "Profile updated"
       else
         @domains = @user.domains
-        render :edit, status: :unprocessable_entity
+        render :edit, status: :unprocessable_content
       end
     end
   end
