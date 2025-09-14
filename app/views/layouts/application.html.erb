@@ -88,7 +88,17 @@
       <% end %>
       <%= yield %>
     </main>
-    <footer class="text-center text-muted py-4 border-top bg-white">&copy; <%= Time.current.year %> Profile Portal</footer>
+    <footer class="site-footer py-4 border-top">
+      <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <div>&copy; <%= Time.current.year %> Profile Portal • Developed by <strong>Mridul Shukla</strong></div>
+        <nav class="footer-links d-flex gap-3" aria-label="Footer">
+          <%= link_to "Home", root_path, class: "text-decoration-none" %>
+          <%= link_to "News", news_path, class: "text-decoration-none" %>
+          <%= link_to "Blog", posts_path, class: "text-decoration-none" %>
+          <%= link_to "Projects", projects_path, class: "text-decoration-none" %>
+        </nav>
+      </div>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js" integrity="sha384-YwqK2yqZ3yKX1H5u8aCwXnY6W5QJbPz1oWc9E9jKpCwE8B8r4rGJxYbC9u7v3w9x" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.9.3/dist/semantic.min.js" integrity="sha384-7yB5G2i6wX7o1iXz8yfuYwC0r9mVnq+7O3M3rBq3kH2R6cQYl1y2R9p5r8u7t1vM" crossorigin="anonymous"></script>
