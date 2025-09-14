@@ -55,8 +55,23 @@
     return `${seconds} seconds`;
   }
 
+  function buildTopSection(section) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'mb-4';
+    const title = document.createElement('h4');
+    title.className = 'h5 section-title';
+    title.textContent = section.title || 'Top Stories';
+    const row = document.createElement('div');
+    row.className = 'row g-3';
+    (section.articles || []).forEach(a => row.appendChild(buildCard(a)));
+    wrapper.appendChild(title);
+    wrapper.appendChild(row);
+    return wrapper;
+  }
+
   async function loadNews() {
     const list = document.getElementById('news-list');
+    const top = document.getElementById('news-top');
     if (!list) return;
     const url = new URL(window.location.href);
     url.searchParams.set('category', list.dataset.category || 'general');
@@ -65,6 +80,16 @@
     try {
       const res = await fetch(jsonUrl, { headers: { 'Accept': 'application/json' } });
       const data = await res.json();
+      if (top) {
+        top.innerHTML = '';
+        if (data.top_stories && data.top_stories.length) {
+          const fragTop = document.createDocumentFragment();
+          data.top_stories.forEach(sec => fragTop.appendChild(buildTopSection(sec)));
+          top.appendChild(fragTop);
+        } else {
+          top.innerHTML = '<div class="text-muted">No top stories at this time.</div>';
+        }
+      }
       list.innerHTML = '';
       if (!data.articles || data.articles.length === 0) {
         const empty = document.createElement('div');

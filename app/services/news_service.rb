@@ -33,4 +33,18 @@ class NewsService
     Rails.logger.warn("[NewsService] #{e.class}: #{e.message}")
     []
   end
+
+  # Everything endpoint for keyword/topic searches
+  def everything(query:, page_size: 10, sort_by: 'publishedAt', language: 'en')
+    raise ArgumentError, 'Missing NEWSAPI_KEY' if @api_key.blank?
+    key = "newsapi:everything:#{query}:#{page_size}:#{sort_by}:#{language}"
+    Rails.cache.fetch(key, expires_in: 10.minutes) do
+      resp = @conn.get('everything', { q: query, pageSize: page_size, sortBy: sort_by, language: language }, { 'X-Api-Key' => @api_key })
+      data = JSON.parse(resp.body) rescue { 'status' => 'error', 'articles' => [] }
+      data['status'] == 'ok' ? (data['articles'] || []) : []
+    end
+  rescue Faraday::Error => e
+    Rails.logger.warn("[NewsService#everything] #{e.class}: #{e.message}")
+    []
+  end
 end
