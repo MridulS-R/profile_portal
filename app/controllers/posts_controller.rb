@@ -4,7 +4,15 @@ class PostsController < ApplicationController
   before_action :set_owned_post, only: [:edit, :update, :destroy]
 
   def index
-    @posts = Post.published.recent.includes(:user)
+    @posts = Post.published.recent.includes(:user, :tags, :category)
+    if params[:tag].present?
+      @tag = Tag.friendly.find(params[:tag]) rescue nil
+      @posts = @posts.joins(:tags).where(tags: { id: @tag.id }) if @tag
+    end
+    if params[:category].present?
+      @category = Category.friendly.find(params[:category]) rescue nil
+      @posts = @posts.where(category: @category) if @category
+    end
   end
 
   def show; end
@@ -48,7 +56,6 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:title, :body, :published_at)
+    params.require(:post).permit(:title, :body, :published_at, :category_id, :tag_names)
   end
 end
-
