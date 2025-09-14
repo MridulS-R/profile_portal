@@ -6,6 +6,16 @@ Rails.application.routes.draw do
     # Mount Sidekiq dashboard in development for convenience
     if Rails.env.development?
       mount Sidekiq::Web => '/sidekiq'
+    elsif Rails.env.production?
+      # Protect Sidekiq Web UI in production via Basic Auth using env vars
+      Sidekiq::Web.use Rack::Auth::Basic do |username, password|
+        u = ENV.fetch('SIDEKIQ_ADMIN_USER', nil)
+        p = ENV.fetch('SIDEKIQ_ADMIN_PASSWORD', nil)
+        next false if u.nil? || p.nil?
+        ActiveSupport::SecurityUtils.secure_compare(username, u) &
+          ActiveSupport::SecurityUtils.secure_compare(password, p)
+      end
+      mount Sidekiq::Web => '/sidekiq'
     end
   rescue LoadError
     # sidekiq not available; skip

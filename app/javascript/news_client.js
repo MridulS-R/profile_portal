@@ -43,6 +43,43 @@
     return col;
   }
 
+  function buildCompactItem(a) {
+    const item = document.createElement('div');
+    item.className = 'news-item';
+    if (a.image_url) {
+      const thumb = document.createElement('div');
+      thumb.className = 'thumb';
+      const img = document.createElement('img');
+      img.src = a.image_url; img.alt = 'thumbnail';
+      thumb.appendChild(img);
+      item.appendChild(thumb);
+    }
+    const body = document.createElement('div');
+    const title = document.createElement('div');
+    title.className = 'title';
+    const link = document.createElement('a');
+    link.href = a.url || '#';
+    link.textContent = a.title || 'Untitled';
+    link.target = '_blank'; link.rel = 'noopener';
+    title.appendChild(link);
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    const parts = [];
+    if (a.source) parts.push(a.source);
+    if (a.published_at) {
+      try { parts.push(timeSince(new Date(a.published_at)) + ' ago'); } catch(_){}
+    }
+    meta.textContent = parts.join(' • ');
+    const desc = document.createElement('div');
+    desc.className = 'small text-muted';
+    desc.textContent = a.description || '';
+    body.appendChild(title);
+    body.appendChild(meta);
+    body.appendChild(desc);
+    item.appendChild(body);
+    return item;
+  }
+
   function timeSince(date) {
     const seconds = Math.floor((new Date() - date) / 1000);
     const intervals = [
@@ -72,10 +109,13 @@
   async function loadNews() {
     const list = document.getElementById('news-list');
     const top = document.getElementById('news-top');
+    const pagination = document.getElementById('news-pagination');
     if (!list) return;
     const url = new URL(window.location.href);
     url.searchParams.set('category', list.dataset.category || 'general');
     url.searchParams.set('format', 'json');
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const pageSize = parseInt(url.searchParams.get('page_size') || '12');
     const jsonUrl = `${url.pathname}${url.search}`;
     try {
       const res = await fetch(jsonUrl, { headers: { 'Accept': 'application/json' } });
@@ -90,17 +130,54 @@
           top.innerHTML = '<div class="text-muted">No top stories at this time.</div>';
         }
       }
+      // Render list in chosen mode
+      const view = (localStorage.getItem('news_view') || 'cards');
       list.innerHTML = '';
-      if (!data.articles || data.articles.length === 0) {
-        const empty = document.createElement('div');
-        empty.className = 'col-12 text-muted';
-        empty.textContent = 'No news found for this category.';
-        list.appendChild(empty);
-        return;
+      if (view === 'compact') {
+        list.classList.add('news-compact');
+        list.classList.remove('row','g-3');
+        if (!data.articles || data.articles.length === 0) {
+          list.innerHTML = '<div class="text-muted">No news found for this category.</div>';
+        } else {
+          const frag = document.createDocumentFragment();
+          data.articles.forEach(a => frag.appendChild(buildCompactItem(a)));
+          list.appendChild(frag);
+        }
+      } else {
+        list.classList.remove('news-compact');
+        list.classList.add('row','g-3');
+        if (!data.articles || data.articles.length === 0) {
+          const empty = document.createElement('div');
+          empty.className = 'col-12 text-muted';
+          empty.textContent = 'No news found for this category.';
+          list.appendChild(empty);
+        } else {
+          const frag = document.createDocumentFragment();
+          data.articles.forEach(a => frag.appendChild(buildCard(a)));
+          list.appendChild(frag);
+        }
       }
-      const frag = document.createDocumentFragment();
-      data.articles.forEach(a => frag.appendChild(buildCard(a)));
-      list.appendChild(frag);
+
+      // Pagination controls
+      if (pagination) {
+        const total = parseInt(data.total || 0);
+        const totalPages = Math.max(1, Math.ceil(total / (data.page_size || pageSize)));
+        const curPage = data.page || page;
+        const prevBtn = document.getElementById('prev-page');
+        const nextBtn = document.getElementById('next-page');
+        const info = document.getElementById('page-info');
+        if (info) info.textContent = `Page ${curPage} of ${totalPages}`;
+        if (prevBtn) prevBtn.disabled = curPage <= 1;
+        if (nextBtn) nextBtn.disabled = curPage >= totalPages;
+        const changePage = (newPage) => {
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.set('page', String(newPage));
+          history.pushState({}, '', newUrl.toString());
+          loadNews();
+        };
+        if (prevBtn) prevBtn.onclick = () => curPage > 1 && changePage(curPage - 1);
+        if (nextBtn) nextBtn.onclick = () => curPage < totalPages && changePage(curPage + 1);
+      }
     } catch (e) {
       list.innerHTML = '<div class="col-12 text-danger">Failed to load news.</div>';
     }
@@ -108,4 +185,15 @@
 
   document.addEventListener('turbo:load', loadNews);
   document.addEventListener('DOMContentLoaded', loadNews);
+
+  // View toggle buttons
+  function initViewToggles() {
+    const btnCards = document.getElementById('view-cards');
+    const btnCompact = document.getElementById('view-compact');
+    const setView = (v) => { try { localStorage.setItem('news_view', v); } catch(_){} loadNews(); };
+    if (btnCards) btnCards.onclick = () => setView('cards');
+    if (btnCompact) btnCompact.onclick = () => setView('compact');
+  }
+  document.addEventListener('turbo:load', initViewToggles);
+  document.addEventListener('DOMContentLoaded', initViewToggles);
 })();

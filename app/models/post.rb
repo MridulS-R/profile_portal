@@ -35,17 +35,34 @@ class Post < ApplicationRecord
   after_save :persist_tags
 
   def rendered_body
-    renderer = Redcarpet::Render::HTML.new(filter_html: true, hard_wrap: true)
-    markdown = Redcarpet::Markdown.new(renderer,
-                                       autolink: true,
-                                       tables: true,
-                                       fenced_code_blocks: true,
-                                       strikethrough: true,
-                                       lax_spacing: true,
-                                       space_after_headers: true)
-    html = markdown.render(self.body.to_s)
+    # Try to use Redcarpet if available, otherwise fall back to simple formatting
+    begin
+      require 'redcarpet' unless defined?(Redcarpet)
+    rescue LoadError
+      # gem not available; fallback below
+    end
+
+    html = nil
+    if defined?(Redcarpet)
+      renderer = Redcarpet::Render::HTML.new(filter_html: true, hard_wrap: true)
+      markdown = Redcarpet::Markdown.new(renderer,
+                                         autolink: true,
+                                         tables: true,
+                                         fenced_code_blocks: true,
+                                         strikethrough: true,
+                                         lax_spacing: true,
+                                         space_after_headers: true)
+      html = markdown.render(self.body.to_s)
+    else
+      html = ActionController::Base.helpers.simple_format(self.body.to_s)
+    end
+
     # Sanitize to avoid XSS, allowing common formatting tags
-    ActionController::Base.helpers.sanitize(html, tags: %w[p br strong em a ul ol li h1 h2 h3 h4 h5 h6 code pre table thead tbody tr th td blockquote hr], attributes: %w[href rel])
+    ActionController::Base.helpers.sanitize(
+      html,
+      tags: %w[p br strong em a ul ol li h1 h2 h3 h4 h5 h6 code pre table thead tbody tr th td blockquote hr],
+      attributes: %w[href rel]
+    )
   end
 
   private

@@ -12,7 +12,11 @@ class NewsController < ApplicationController
 
     begin
       service = NewsService.new
-      @articles = service.top_headlines(category: @category)
+      @page_size = (params[:page_size].presence || 12).to_i.clamp(1, 50)
+      @page = (params[:page].presence || 1).to_i.clamp(1, 100)
+      result = service.top_headlines(category: @category, page_size: @page_size, page: @page)
+      @articles = result[:articles]
+      @total = result[:total]
       # Top stories sections
       @top_stories = []
       @top_stories << { title: 'Top in Technology', key: 'technology', articles: service.everything(query: 'technology', page_size: 6) }
@@ -21,6 +25,7 @@ class NewsController < ApplicationController
     rescue => e
       Rails.logger.error("[NewsController#index] #{e.class}: #{e.message}")
       @articles = []
+      @total = 0
       @top_stories = []
       flash.now[:alert] = 'Unable to load news at this time.'
     end
@@ -30,6 +35,9 @@ class NewsController < ApplicationController
       format.json do
         render json: {
           category: @category,
+          page: @page,
+          page_size: @page_size,
+          total: @total,
           articles: (@articles || []).map { |a|
             {
               title: a['title'],

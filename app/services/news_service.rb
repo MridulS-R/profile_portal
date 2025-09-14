@@ -16,22 +16,19 @@ class NewsService
     end
   end
 
-  def top_headlines(category: 'general', country: DEFAULT_COUNTRY, page_size: 20)
+  def top_headlines(category: 'general', country: DEFAULT_COUNTRY, page_size: 20, page: 1)
     raise ArgumentError, 'Missing NEWSAPI_KEY' if @api_key.blank?
     category = 'general' unless CATEGORIES.include?(category) || category == 'general'
-    key = "newsapi:top:#{country}:#{category}:#{page_size}"
+    key = "newsapi:top:#{country}:#{category}:#{page_size}:#{page}"
     Rails.cache.fetch(key, expires_in: 5.minutes) do
-      resp = @conn.get('top-headlines', { country: country, category: category, pageSize: page_size }, { 'X-Api-Key' => @api_key })
+      resp = @conn.get('top-headlines', { country: country, category: category, pageSize: page_size, page: page }, { 'X-Api-Key' => @api_key })
       data = JSON.parse(resp.body) rescue { 'status' => 'error', 'articles' => [] }
-      if data['status'] == 'ok'
-        data['articles'] || []
-      else
-        []
-      end
+      return { articles: [], total: 0 } unless data['status'] == 'ok'
+      { articles: (data['articles'] || []), total: (data['totalResults'] || 0) }
     end
   rescue Faraday::Error => e
     Rails.logger.warn("[NewsService] #{e.class}: #{e.message}")
-    []
+    { articles: [], total: 0 }
   end
 
   # Everything endpoint for keyword/topic searches

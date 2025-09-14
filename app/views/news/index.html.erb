@@ -12,6 +12,10 @@
         </li>
       <% end %>
     </ul>
+    <div class="d-flex justify-content-end gap-2 mb-2">
+      <button id="view-cards" class="btn btn-sm btn-outline-secondary">Cards</button>
+      <button id="view-compact" class="btn btn-sm btn-outline-secondary">Compact</button>
+    </div>
   </div>
 
   <div id="news-top" class="col-12 mb-3">
@@ -20,6 +24,13 @@
 
   <div id="news-list" class="row g-3" data-category="<%= @category %>">
     <div class="col-12 text-muted">Loading news…</div>
+  </div>
+  <div id="news-pagination" class="col-12 mt-3">
+    <div class="pagination-controls">
+      <button class="btn btn-sm btn-outline-secondary" id="prev-page">Prev</button>
+      <span id="page-info" class="text-muted small">Page 1</span>
+      <button class="btn btn-sm btn-outline-secondary" id="next-page">Next</button>
+    </div>
   </div>
   <noscript>
     <div class="col-12 text-muted">Enable JavaScript to view the latest news.</div>
