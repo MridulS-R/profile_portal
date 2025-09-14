@@ -26,11 +26,8 @@ gem 'bundler-audit'
 gem "sidekiq"
 gem "sidekiq-cron"
 gem 'clamby'
-<<<<<<< HEAD
 gem 'rss'
-=======
 gem "redis", ">= 4.0.1"
->>>>>>> 780e0b8 (adding performanc)
 
 group :development, :test do
   gem "dotenv-rails"
