@@ -18,5 +18,24 @@ class NewsController < ApplicationController
       @articles = []
       flash.now[:alert] = 'Unable to load news at this time.'
     end
+
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: {
+          category: @category,
+          articles: (@articles || []).map { |a|
+            {
+              title: a['title'],
+              source: a.dig('source', 'name'),
+              image_url: a['urlToImage'],
+              description: a['description'],
+              url: a['url'],
+              published_at: a['publishedAt']
+            }
+          }
+        }
+      end
+    end
   end
 end
