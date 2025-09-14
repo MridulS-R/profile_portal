@@ -48,6 +48,12 @@ Rails.application.routes.draw do
   # Backward-compatible route for older links
   get "/demos", to: "projects#index"
 
+  # Simple LLM prompt page
+  get  "/llm", to: "llm#new", as: :llm
+  post "/llm", to: "llm#create"
+  post "/llm/reindex", to: "llm#reindex", as: :llm_reindex
+  get  "/llm/status", to: "llm#status", as: :llm_status
+
   get "/up", to: proc { [200, { "Content-Type" => "text/plain" }, ["ok"]] }
 
   # Ignore Chrome DevTools well-known probe to reduce noisy 404s

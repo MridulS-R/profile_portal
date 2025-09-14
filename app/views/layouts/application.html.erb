@@ -41,6 +41,7 @@
             <li class="nav-item"><%= link_to "Profile", root_path, class: ["nav-link", (current_page?(root_path) ? 'active' : nil)].compact.join(' ') %></li>
             <li class="nav-item"><%= link_to "News", news_path, class: ["nav-link", (current_page?(news_path) || controller_name == 'news' ? 'active' : nil)].compact.join(' ') %></li>
             <li class="nav-item"><%= link_to "Blog", posts_path, class: ["nav-link", (controller_name == 'posts' ? 'active' : nil)].compact.join(' ') %></li>
+            <li class="nav-item"><%= link_to "Use my LLM", llm_path, class: ["nav-link", (controller_name == 'llm' ? 'active' : nil)].compact.join(' ') %></li>
             <% if Rails.env.development? %>
               <li class="nav-item"><%= link_to "Sidekiq", "/sidekiq", class: "nav-link" %></li>
             <% end %>
@@ -96,6 +97,7 @@
           <%= link_to "News", news_path, class: "text-decoration-none" %>
           <%= link_to "Blog", posts_path, class: "text-decoration-none" %>
           <%= link_to "Projects", projects_path, class: "text-decoration-none" %>
+          <%= link_to "Use my LLM", llm_path, class: "text-decoration-none" %>
         </nav>
       </div>
     </footer>

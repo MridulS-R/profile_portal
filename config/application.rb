@@ -16,5 +16,9 @@ module ProfilePortal
     config.lograge.enabled = true
     # Use Sidekiq for background jobs
     config.active_job.queue_adapter = :sidekiq
+
+    # Autoload and eager load lib for custom libraries (e.g., Vision)
+    config.autoload_paths << Rails.root.join('lib')
+    config.eager_load_paths << Rails.root.join('lib')
   end
 end

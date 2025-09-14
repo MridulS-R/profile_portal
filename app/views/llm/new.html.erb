@@ -1,0 +1,63 @@
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-10 col-xl-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h5 class="mb-0">Use my LLM</h5>
+            <div class="text-muted small">Semantic search over posts, projects, profiles, resumes, and docs</div>
+          </div>
+          <div class="d-flex gap-2">
+            <% if current_user&.respond_to?(:admin) && current_user&.admin? %>
+              <%= button_to 'Rebuild Index', llm_reindex_path, method: :post, class: 'btn btn-outline-secondary btn-sm' %>
+              <%= link_to 'Index Status', llm_status_path, class: 'btn btn-outline-secondary btn-sm' %>
+            <% end %>
+          </div>
+        </div>
+        <%= form_with url: llm_path, method: :post, local: true, html: { class: 'mb-3' } do %>
+          <div class="mb-3">
+            <label class="form-label">Prompt</label>
+            <%= text_area_tag :prompt, @prompt, rows: 4, class: 'form-control', placeholder: 'Ask anything…' %>
+          </div>
+          <div class="d-flex gap-3 align-items-end">
+            <div>
+              <label class="form-label small mb-1">Top K</label>
+              <%= number_field_tag :k, (@k || 5), min: 1, max: 20, class: 'form-control form-control-sm', style: 'width: 90px;' %>
+            </div>
+            <div class="ms-auto">
+              <%= submit_tag 'Search', class: 'btn btn-primary' %>
+            </div>
+          </div>
+        <% end %>
+
+        <% if @error.present? %>
+          <div class="alert alert-warning" role="alert"><%= @error %></div>
+        <% end %>
+
+        <% if @results.present? %>
+          <hr />
+          <div>
+            <div class="fw-semibold mb-2">Top results</div>
+            <div class="list-group">
+              <% @results.each do |r| %>
+                <div class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="small text-muted"><%= (r[:metadata] || {})[:type].to_s.titleize %></div>
+                    <div class="small text-muted">Score: <%= sprintf('%.3f', r[:score].to_f) %></div>
+                  </div>
+                  <div class="fw-semibold mt-1 mb-1"><%= h((r[:metadata] || {})[:title] || (r[:metadata] || {})[:repo] || 'Untitled') %></div>
+                  <div class="text-body">
+                    <%= simple_format h(r[:content].to_s.truncate(500)) %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% elsif @prompt.present? && @error.blank? %>
+          <hr />
+          <div class="text-muted">No matches found.</div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

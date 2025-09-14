@@ -29,6 +29,12 @@ gem 'clamby'
 gem 'rss'
 gem "redis", ">= 4.0.1"
 
+# Optional content extraction helpers for indexing
+gem "pdf-reader"
+gem "rubyzip", "~> 2.3"
+# Vector search / RAG toolkit
+
+
 group :development, :test do
   gem "dotenv-rails"
   gem 'spring'

@@ -23,6 +23,20 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
 COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
 
 
+--
+-- Name: vector; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS vector WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION vector; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION vector IS 'vector data type and ivfflat and hnsw access methods';
+
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -459,7 +473,8 @@ CREATE TABLE public.users (
     accent_color character varying,
     custom_css text,
     allow_comments boolean DEFAULT true NOT NULL,
-    background_intensity character varying DEFAULT 'medium'::character varying
+    background_intensity character varying DEFAULT 'medium'::character varying,
+    admin boolean DEFAULT false NOT NULL
 );
 
 
@@ -480,6 +495,75 @@ CREATE SEQUENCE public.users_id_seq
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: vision_index_runs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.vision_index_runs (
+    id bigint NOT NULL,
+    started_at timestamp(6) without time zone NOT NULL,
+    finished_at timestamp(6) without time zone,
+    records_indexed integer DEFAULT 0 NOT NULL,
+    success boolean DEFAULT false NOT NULL,
+    error text,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: vision_index_runs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.vision_index_runs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vision_index_runs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.vision_index_runs_id_seq OWNED BY public.vision_index_runs.id;
+
+
+--
+-- Name: vision_vectors; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.vision_vectors (
+    id bigint NOT NULL,
+    key character varying NOT NULL,
+    content text NOT NULL,
+    metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
+    embedding public.vector(384) NOT NULL,
+    created_at timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+--
+-- Name: vision_vectors_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.vision_vectors_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: vision_vectors_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.vision_vectors_id_seq OWNED BY public.vision_vectors.id;
 
 
 --
@@ -564,6 +648,20 @@ ALTER TABLE ONLY public.tags ALTER COLUMN id SET DEFAULT nextval('public.tags_id
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Name: vision_index_runs id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.vision_index_runs ALTER COLUMN id SET DEFAULT nextval('public.vision_index_runs_id_seq'::regclass);
+
+
+--
+-- Name: vision_vectors id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.vision_vectors ALTER COLUMN id SET DEFAULT nextval('public.vision_vectors_id_seq'::regclass);
 
 
 --
@@ -676,6 +774,22 @@ ALTER TABLE ONLY public.tags
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vision_index_runs vision_index_runs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.vision_index_runs
+    ADD CONSTRAINT vision_index_runs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vision_vectors vision_vectors_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.vision_vectors
+    ADD CONSTRAINT vision_vectors_pkey PRIMARY KEY (id);
 
 
 --
@@ -826,7 +940,6 @@ CREATE INDEX index_posts_on_user_id ON public.posts USING btree (user_id);
 
 
 --
- 
 -- Name: index_projects_on_description_trgm; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -841,7 +954,6 @@ CREATE INDEX index_projects_on_repo_full_name_trgm ON public.projects USING gin 
 
 
 --
- 
 -- Name: index_projects_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -856,7 +968,6 @@ CREATE UNIQUE INDEX index_projects_on_user_id_and_repo_full_name ON public.proje
 
 
 --
- 
 -- Name: index_projects_on_user_id_and_stars_desc; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -864,7 +975,6 @@ CREATE INDEX index_projects_on_user_id_and_stars_desc ON public.projects USING b
 
 
 --
- 
 -- Name: index_tags_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -911,6 +1021,27 @@ CREATE UNIQUE INDEX index_users_on_reset_password_token ON public.users USING bt
 --
 
 CREATE UNIQUE INDEX index_users_on_slug ON public.users USING btree (slug);
+
+
+--
+-- Name: index_vision_vectors_on_embedding_cosine; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_vision_vectors_on_embedding_cosine ON public.vision_vectors USING ivfflat (embedding public.vector_cosine_ops) WITH (lists='100');
+
+
+--
+-- Name: index_vision_vectors_on_key; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_vision_vectors_on_key ON public.vision_vectors USING btree (key);
+
+
+--
+-- Name: index_vision_vectors_on_metadata; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_vision_vectors_on_metadata ON public.vision_vectors USING gin (metadata);
 
 
 --
@@ -1016,6 +1147,11 @@ ALTER TABLE ONLY public.post_tags
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20250914172900'),
+('20250914172800'),
+('20250914172700'),
+('20250914172600'),
+('20250914172500'),
 ('20250914170100'),
 ('20250914070000'),
 ('20250914062000'),
@@ -1033,3 +1169,4 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250101000020'),
 ('20250101000010'),
 ('20250101000000');
+

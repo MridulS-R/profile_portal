@@ -1,0 +1,46 @@
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-10 col-xl-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h5 class="mb-0">Index Status</h5>
+            <div class="text-muted small">Recent indexing runs</div>
+          </div>
+          <%= link_to 'Back to Search', llm_path, class: 'btn btn-outline-secondary btn-sm' %>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Started</th>
+                <th>Finished</th>
+                <th>Records</th>
+                <th>Status</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @runs.each do |r| %>
+                <tr>
+                  <td><%= r.started_at&.in_time_zone&.strftime('%Y-%m-%d %H:%M:%S') %></td>
+                  <td><%= r.finished_at&.in_time_zone&.strftime('%Y-%m-%d %H:%M:%S') %></td>
+                  <td><%= r.records_indexed %></td>
+                  <td>
+                    <% if r.success %>
+                      <span class="badge bg-success">OK</span>
+                    <% else %>
+                      <span class="badge bg-danger">Failed</span>
+                    <% end %>
+                  </td>
+                  <td class="small"><%= r.error %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

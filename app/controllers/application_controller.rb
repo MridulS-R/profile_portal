@@ -11,6 +11,12 @@ class ApplicationController < ActionController::Base
   end
 
   private
+  def require_admin!
+    unless user_signed_in? && current_user.respond_to?(:admin) && current_user.admin?
+      flash[:alert] = "You are not authorized to access that."
+      redirect_to(root_path)
+    end
+  end
   # Prefer a deterministic landing page after login to avoid edge-cases
   # hitting the generic home route.
   def after_sign_in_path_for(resource)
