@@ -23,7 +23,7 @@ class AiMlAggregator
   class << self
     def fetch_top(limit: 10)
       Rails.cache.fetch(cache_key(limit), expires_in: 1.hour) do
-        via_news_api(limit) || via_rss(limit)
+        via_rss(limit)
       end
     rescue => e
       Rails.logger.warn("[AiMlAggregator] #{e.class}: #{e.message}")
@@ -34,32 +34,6 @@ class AiMlAggregator
 
     def cache_key(limit)
       "ai_ml:top:#{limit}"
-    end
-
-    # Prefer NewsAPI if configured
-    def via_news_api(limit)
-      api_key = ENV['NEWSAPI_KEY']
-      return nil if api_key.blank?
-
-      begin
-        svc = NewsService.new(api_key: api_key)
-        # Broad query for AI/ML topics
-        query = '("artificial intelligence" OR AI OR "machine learning" OR "deep learning")'
-        articles = svc.everything(query: query, page_size: limit, sort_by: 'publishedAt', language: 'en')
-        return nil if articles.blank?
-
-        articles.filter_map do |a|
-          title = a['title'].to_s.strip
-          url   = a['url'].to_s
-          next if title.empty? || url.empty?
-          source = (a.dig('source', 'name') || host_for(url)).to_s
-          published = parse_time(a['publishedAt'])
-          Article.new(title: title, url: url, source: source, published_at: published)
-        end
-      rescue => e
-        Rails.logger.info("[AiMlAggregator#via_news_api] fallback: #{e.class}: #{e.message}")
-        nil
-      end
     end
 
     def via_rss(limit)
