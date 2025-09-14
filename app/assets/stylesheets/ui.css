@@ -64,6 +64,11 @@ h2, h3, .h1, .h2, .h3, .h4, .h5 { letter-spacing: -0.01em; }
 .news-hero .bg { position:absolute; inset:0; background-size: cover; background-position: center; transform: scale(1.02); filter: brightness(.8); }
 .news-hero .overlay { position:absolute; inset:0; background: linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.65) 100%); }
 .news-hero .content { position:relative; z-index:2; color:#fff; padding: 1.25rem; display:flex; flex-direction:column; justify-content:flex-end; height:100%; }
+
+/* Prefer system fonts; avoid loading Lato webfonts from Fomantic */
+body, .ui, .ui input, .ui button, .ui.menu, .ui.header, .ui.list, .ui.cards {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif !important;
+}
 .news-hero .title { font-size: clamp(1.25rem, 2.2vw, 1.9rem); font-weight: 700; margin-bottom: .5rem; }
 .news-hero .meta { font-size:.9rem; opacity:.9; }
 .news-hero .actions { margin-top: .75rem; }

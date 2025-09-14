@@ -50,6 +50,9 @@ Rails.application.routes.draw do
 
   get "/up", to: proc { [200, { "Content-Type" => "text/plain" }, ["ok"]] }
 
+  # Ignore Chrome DevTools well-known probe to reduce noisy 404s
+  get '/.well-known/appspecific/com.chrome.devtools.json', to: proc { [204, { 'Content-Type' => 'application/json' }, ['{}']] }
+
   resources :posts do
     resources :post_comments, only: [:create, :destroy]
     post 'react', to: 'post_reactions#create', on: :member
