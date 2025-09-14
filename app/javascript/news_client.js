@@ -62,6 +62,15 @@
     return item;
   }
 
+  function buildPill(a) {
+    const link = document.createElement('a');
+    link.className = 'pill';
+    link.href = a.url || '#';
+    link.target = '_blank'; link.rel = 'noopener';
+    link.textContent = a.title || 'Untitled';
+    return link;
+  }
+
   function timeSince(date) {
     const seconds = Math.floor((new Date() - date) / 1000);
     const intervals = [
@@ -142,6 +151,7 @@
       if (view === 'compact') {
         list.classList.add('news-compact');
         list.classList.remove('row','g-3');
+        list.classList.remove('news-pills');
         if (!data.articles || data.articles.length === 0) {
           list.innerHTML = '<div class="text-muted">No news found for this category.</div>';
         } else {
@@ -150,9 +160,22 @@
           items.forEach(a => frag.appendChild(buildCompactItem(a)));
           list.appendChild(frag);
         }
+      } else if (view === 'pills') {
+        list.classList.remove('news-compact');
+        list.classList.remove('row','g-3');
+        list.classList.add('news-pills');
+        if (!data.articles || data.articles.length === 0) {
+          list.innerHTML = '<div class="text-muted">No news found for this category.</div>';
+        } else {
+          const frag = document.createDocumentFragment();
+          const items = data.articles.slice( (hero ? 1 : 0) );
+          items.forEach(a => frag.appendChild(buildPill(a)));
+          list.appendChild(frag);
+        }
       } else {
         list.classList.remove('news-compact');
         list.classList.add('row','g-3');
+        list.classList.remove('news-pills');
         if (!data.articles || data.articles.length === 0) {
           const empty = document.createElement('div');
           empty.className = 'col-12 text-muted';
@@ -198,9 +221,11 @@
   function initViewToggles() {
     const btnCards = document.getElementById('view-cards');
     const btnCompact = document.getElementById('view-compact');
+    const btnPills = document.getElementById('view-pills');
     const setView = (v) => { try { localStorage.setItem('news_view', v); } catch(_){} loadNews(); };
     if (btnCards) btnCards.onclick = () => setView('cards');
     if (btnCompact) btnCompact.onclick = () => setView('compact');
+    if (btnPills) btnPills.onclick = () => setView('pills');
   }
   document.addEventListener('turbo:load', initViewToggles);
   document.addEventListener('DOMContentLoaded', initViewToggles);

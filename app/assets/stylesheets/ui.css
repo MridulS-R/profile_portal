@@ -98,3 +98,18 @@ h2, h3, .h1, .h2, .h3, .h4, .h5 { letter-spacing: -0.01em; }
 /* Compact list thumb tweak */
 .news-compact .news-item .thumb { width: 64px; height: 64px; }
 .news-compact .news-item .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Pills view for news list */
+.news-pills { display: flex; flex-wrap: wrap; gap: .5rem; }
+.news-pills .pill {
+  display: inline-block;
+  border-radius: 999px;
+  padding: .35rem .75rem;
+  font-size: .9rem;
+  line-height: 1;
+  text-decoration: none;
+  border: 1px solid color-mix(in srgb, var(--accent, #0d6efd) 35%, transparent);
+  color: var(--accent, #0d6efd);
+  background: color-mix(in srgb, var(--accent, #0d6efd) 14%, transparent);
+}
+.news-pills .pill:hover { color: #fff; background: var(--accent, #0d6efd); }

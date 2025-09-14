@@ -6,13 +6,12 @@
 }
 
 body.abstract-bg {
-  /* Layered gradients: three radial shapes on top of a diagonal gradient */
-  background-image:
-    radial-gradient(60vmax 60vmax at 10% 10%, color-mix(in srgb, var(--bg-light) 30%, transparent) 0%, transparent 60%),
-    radial-gradient(40vmax 40vmax at 85% 15%, color-mix(in srgb, var(--bg-light) 25%, transparent) 0%, transparent 60%),
-    radial-gradient(70vmax 70vmax at 50% 100%, color-mix(in srgb, var(--bg-light) 28%, transparent) 0%, transparent 60%),
-    linear-gradient(135deg, var(--bg-deep) 0%, var(--bg-mid) 50%, color-mix(in srgb, var(--bg-light) 60%, white 0%) 100%);
+  /* Force a clean black backdrop; remove gradients */
+  background-color: #000 !important;
+  background-image: none !important;
   background-attachment: fixed;
+  /* Ensure default text remains readable on black */
+  color: #e9ecef;
 }
 
 /* Respect user accent color if provided */
@@ -28,11 +27,12 @@ body.bg-dark.abstract-bg {
 
 /* Add subtle vignette for depth */
 body.abstract-bg::before {
+  /* Reduce vignette since background is pure black */
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(120vmax 80vmax at 50% 0%, transparent 40%, rgba(0,0,0,0.15) 100%);
+  background: radial-gradient(120vmax 80vmax at 50% 0%, transparent 60%, rgba(0,0,0,0.2) 100%);
 }
 
 /* Elevate main content like a card on the background */
@@ -42,6 +42,13 @@ main.container {
   border-radius: 0.75rem;
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+}
+
+/* Ensure readable text contexts */
+/* Default: light text on dark background (inherited from body) */
+/* Explicitly use dark text only on solid light surfaces */
+.card, .card .card-body, .dropdown-menu, .offcanvas, .modal-content, .alert, footer.bg-white {
+  color: #212529;
 }
 
 /* Improve card shadows to stand out against the abstract background */
