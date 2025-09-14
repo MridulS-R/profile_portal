@@ -6,12 +6,12 @@
 }
 
 body.abstract-bg {
-  /* Solid light-dark background (no image) */
-  background-color: #121826 !important; /* lighter dark */
+  /* Semi-dark background (lighter than pure dark) */
+  background-color: #1b2433 !important; /* semi-dark */
   background-image: none !important;
   background-attachment: fixed;
-  /* Ensure default text remains readable on dark */
-  color: #e9ecef;
+  /* Ensure default text remains readable on semi-dark */
+  color: #e6edf3;
 }
 
 /* News categories: use darker pills instead of blue */
@@ -38,8 +38,9 @@ body.abstract-bg {
 
 /* Dark theme tweaks */
 body.bg-dark.abstract-bg {
-  --bg-deep: #081a2e;
-  --bg-mid: #0a2f59;
+  /* Slightly lighter palette for semi-dark */
+  --bg-deep: #0c1c2e;
+  --bg-mid: #0f355a;
 }
 
 /* Add subtle vignette for depth */
@@ -59,6 +60,12 @@ main.container {
   border-radius: 0.75rem;
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+}
+
+/* Make the dark navbar match the semi-dark body */
+.navbar.bg-dark {
+  background-color: #202a3b !important; /* semi-dark navbar */
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
 /* Ensure readable text contexts */
