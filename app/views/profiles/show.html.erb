@@ -47,6 +47,19 @@
               <a href="http://<%= d.host %>" class="btn btn-outline-secondary btn-sm">Visit <%= d.host %></a>
             <% end %>
           <% end %>
+          <% if @user.resume.attached? %>
+            <%= link_to "Download Resume", profile_resume_path(@user), class: "btn btn-outline-primary btn-sm" %>
+          <% end %>
+          <% if @user.respond_to?(:resume_scan_status) && @user.resume.attached? %>
+            <% case @user.resume_scan_status %>
+            <% when 'pending' %>
+              <span class="badge rounded-pill text-bg-warning align-self-center">Resume scan: pending</span>
+            <% when 'infected' %>
+              <span class="badge rounded-pill text-bg-danger align-self-center">Resume scan: infected</span>
+            <% when 'clean' %>
+              <span class="badge rounded-pill text-bg-success align-self-center">Resume scan: clean</span>
+            <% end %>
+          <% end %>
         </div>
       </div>
     </div>
@@ -85,6 +98,44 @@
       </div>
     <% else %>
       <div class="text-muted">No projects yet.</div>
+    <% end %>
+
+    <% if @user.resume_pdf? %>
+      <hr class="my-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="h6">Resume Preview (PDF)</h3>
+          <div class="ratio ratio-16x9">
+            <iframe src="<%= profile_resume_path(@user) %>" title="Resume preview"></iframe>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @user.education.present? || @user.experience.present? %>
+      <hr class="my-4">
+      <div class="row g-3">
+        <% if @user.education.present? %>
+          <div class="col-12">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h3 class="h6">Education</h3>
+                <p class="mb-0"><%= simple_format(@user.education) %></p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+        <% if @user.experience.present? %>
+          <div class="col-12">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h3 class="h6">Experience</h3>
+                <p class="mb-0"><%= simple_format(@user.experience) %></p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
     <% end %>
   </div>
 </div>

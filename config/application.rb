@@ -14,5 +14,7 @@ module ProfilePortal
     config.hosts.clear
     config.force_ssl = false
     config.lograge.enabled = true
+    # Use Sidekiq for background jobs
+    config.active_job.queue_adapter = :sidekiq
   end
 end

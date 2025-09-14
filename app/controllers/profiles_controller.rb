@@ -29,21 +29,36 @@ class ProfilesController < ApplicationController
       if attrs[:current_password].blank?
         @user.errors.add(:current_password, "can't be blank")
         @domains = @user.domains
-        render :edit, status: :unprocessable_entity and return
+        render :edit, status: :unprocessable_content and return
       end
       if @user.update_with_password(attrs)
         bypass_sign_in(@user)
         redirect_to public_profile_path(@user), notice: "Profile and password updated"
       else
         @domains = @user.domains
-        render :edit, status: :unprocessable_entity
+        render :edit, status: :unprocessable_content
       end
     else
-      if @user.update(attrs.except(:current_password, :password, :password_confirmation))
+      # Handle resume attachment/removal
+      if params[:remove_resume] == '1'
+        @user.resume.purge_later if @user.resume.attached?
+      end
+      if attrs[:resume]
+        @user.resume_scan_status = 'pending' if @user.respond_to?(:resume_scan_status)
+        @user.resume.attach(attrs[:resume])
+      end
+
+      # Filter out attributes that don't exist on the model (e.g., when migrations haven't run)
+      updatable = attrs.except(:current_password, :password, :password_confirmation, :resume)
+      safe_attrs = updatable.to_h.symbolize_keys.select { |k, _| @user.has_attribute?(k) }
+
+      if @user.update(safe_attrs)
+        # enqueue background scan if a new resume was attached
+        ResumeScanJob.perform_later(@user.id) if attrs[:resume]
         redirect_to public_profile_path(@user), notice: "Profile updated"
       else
         @domains = @user.domains
-        render :edit, status: :unprocessable_entity
+        render :edit, status: :unprocessable_content
       end
     end
   end
@@ -96,6 +111,9 @@ class ProfilesController < ApplicationController
 
   def verify_domain
     d = current_user.domains.find(params[:id])
+    unless d.respond_to?(:verification_token)
+      redirect_to edit_profile_path, alert: "Domain verification not supported." and return
+    end
     if params[:token] == d.verification_token
       d.update(verified_at: Time.current)
       redirect_to edit_profile_path, notice: "Domain verified"
@@ -113,7 +131,24 @@ class ProfilesController < ApplicationController
   def user_params
     params.require(:user).permit(:name, :github_username, :bio, :website, :avatar_url, :banner_url,
                                  :twitter_url, :linkedin_url, :github_url, :youtube_url,
-                                 :location, :skills, :theme,
+                                 :location, :skills, :theme, :education, :experience, :resume,
+                                 :accent_color, :custom_css,
                                  :current_password, :password, :password_confirmation)
+  end
+
+  public
+  # Serve resume with safe content-disposition based on type
+  def resume
+    @user = User.friendly.find(params[:slug])
+    unless @user.resume.attached?
+      head :not_found and return
+    end
+
+    blob = @user.resume.blob
+    disp = %w[application/msword application/vnd.openxmlformats-officedocument.wordprocessingml.document].include?(blob.content_type) ? 'attachment' : 'inline'
+    send_data @user.resume.download,
+              filename: blob.filename.to_s,
+              type: blob.content_type,
+              disposition: disp
   end
 end
