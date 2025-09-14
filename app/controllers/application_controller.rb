@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   # Global, user-friendly error handling. In tests we let errors raise.
   unless Rails.env.test?
     rescue_from ActionController::InvalidAuthenticityToken, with: :handle_csrf_error
+    rescue_from ActionController::ParameterMissing, with: :handle_bad_request
     rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
     rescue_from StandardError, with: :handle_application_error
   end
@@ -51,6 +52,17 @@ class ApplicationController < ActionController::Base
         redirect_back fallback_location: root_path
       end
       format.json { render json: { error: "invalid_authenticity_token" }, status: :unprocessable_content }
+    end
+  end
+
+  def handle_bad_request(e)
+    log_event(:warn, 'bad_request', e)
+    respond_to do |format|
+      format.html do
+        flash[:alert] = "Invalid request. Please try again."
+        redirect_back fallback_location: edit_profile_path
+      end
+      format.json { render json: { error: "bad_request" }, status: :bad_request }
     end
   end
 

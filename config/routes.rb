@@ -33,6 +33,8 @@ Rails.application.routes.draw do
   get "/u/:slug/resume", to: "profiles#resume", as: :profile_resume
   get "/profile/edit", to: "profiles#edit", as: :edit_profile
   patch "/profile", to: "profiles#update", as: :profile
+  # Accept POST fallback for clients without method override
+  post  "/profile", to: "profiles#update"
   post "/profile/sync_github", to: "profiles#sync_github", as: :sync_github
 
   get "/profile/connect_domain", to: "profiles#connect_domain", as: :connect_domain
