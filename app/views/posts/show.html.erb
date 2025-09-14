@@ -1,0 +1,80 @@
+<div class="post-show">
+  <header class="post-show-hero">
+    <div class="reading-width">
+      <h1 class="title mb-1"><%= @post.title %></h1>
+      <div class="post-meta d-flex flex-wrap align-items-center gap-2">
+        <span>Published <%= time_ago_in_words(@post.published_at || @post.created_at) %> ago</span>
+        <span>·</span>
+        <span>by <strong><%= @post.user.name %></strong></span>
+        <% if table_exists?('categories') && @post.category %>
+          <span>·</span>
+          <span class="chip"><span class="dot"></span><%= @post.category.name %></span>
+        <% end %>
+      </div>
+      <% if table_exists?('tags') && table_exists?('post_tags') && @post.tags.any? %>
+        <div class="tag-pills mt-2">
+          <% @post.tags.each do |t| %>
+            <span class="tag-pill"><%= t.name %></span>
+          <% end %>
+        </div>
+      <% end %>
+      <div class="post-actions mt-3 d-flex gap-2">
+        <%= link_to "← Back to blog", posts_path, class: "btn btn-sm btn-outline-light" %>
+        <% if user_signed_in? && @post.user_id == current_user.id %>
+          <%= link_to "Edit", edit_post_path(@post), class: "btn btn-sm btn-outline-secondary" %>
+          <%= button_to "Delete", post_path(@post), method: :delete, data: { confirm: "Delete this post?" }, class: "btn btn-sm btn-danger" %>
+        <% end %>
+      </div>
+    </div>
+  </header>
+
+  <article class="post-article reading-width">
+    <div class="post-content"><%= @post.rendered_body.html_safe %></div>
+  </article>
+
+  <% if table_exists?('post_reactions') %>
+    <div class="reading-width my-2 d-flex align-items-center gap-2 flex-wrap">
+      <%= button_to '👍 Like', react_post_path(@post, kind: 'like'), method: :post, class: 'btn btn-sm btn-outline-light' %>
+      <%= button_to '👎 Dislike', react_post_path(@post, kind: 'dislike'), method: :post, class: 'btn btn-sm btn-outline-light' %>
+      <span class="tag-pill">Likes: <%= @post.reactions.where(kind: 'like').count %></span>
+      <span class="tag-pill">Dislikes: <%= @post.reactions.where(kind: 'dislike').count %></span>
+    </div>
+  <% end %>
+
+  <% if table_exists?('post_comments') %>
+    <section class="reading-width">
+      <h3 class="h5">Comments</h3>
+      <% if @post.user.respond_to?(:allow_comments) && !@post.user.allow_comments %>
+        <div class="alert alert-warning">Comments are disabled by the author.</div>
+      <% else %>
+        <% if user_signed_in? %>
+          <%= form_with url: post_post_comments_path(@post), method: :post, local: true do |f| %>
+            <div class="mb-2">
+              <%= f.text_area :body, rows: 3, placeholder: 'Add a comment...', class: 'form-control' %>
+            </div>
+            <%= f.submit 'Post Comment', class: 'btn btn-primary btn-sm' %>
+          <% end %>
+        <% else %>
+          <div class="alert alert-info">Please log in to comment.</div>
+        <% end %>
+      <% end %>
+
+      <div class="mt-3">
+        <% @post.comments.includes(:user).order(created_at: :desc).each do |c| %>
+          <div class="mb-3 p-2 border rounded">
+            <div class="d-flex justify-content-between">
+              <strong><%= c.user.name %></strong>
+              <small class="text-muted"><%= time_ago_in_words(c.created_at) %> ago</small>
+            </div>
+            <div><%= simple_format(c.body) %></div>
+            <% if user_signed_in? && (c.user_id == current_user.id || @post.user_id == current_user.id) %>
+              <div class="mt-1">
+                <%= button_to 'Delete', post_post_comment_path(@post, c), method: :delete, class: 'btn btn-sm btn-outline-danger' %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</div>

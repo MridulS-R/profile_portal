@@ -16,7 +16,6 @@ gem "devise"
 gem "omniauth"
 gem "omniauth-github"
 gem "omniauth-rails_csrf_protection"
-gem "omniauth-google-oauth2"
 gem "friendly_id", "~> 5.5"
 gem "octokit"
 gem "tailwindcss-rails", "~> 3.3.1"
@@ -27,6 +26,7 @@ gem 'bundler-audit'
 gem "sidekiq"
 gem "sidekiq-cron"
 gem 'clamby'
+gem 'rss'
 
 group :development, :test do
   gem "dotenv-rails"

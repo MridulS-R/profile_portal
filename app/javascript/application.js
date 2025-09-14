@@ -1,2 +1,3 @@
 // Entry point for the build
-import "theme_toggle"
+import "@hotwired/turbo-rails"
+import "news_client"

@@ -11,6 +11,19 @@ class ApplicationController < ActionController::Base
   end
 
   private
+  # Prefer a deterministic landing page after login to avoid edge-cases
+  # hitting the generic home route.
+  def after_sign_in_path_for(resource)
+    begin
+      return public_profile_path(resource)
+    rescue
+      return root_path
+    end
+  end
+
+  def after_sign_out_path_for(_resource_or_scope)
+    root_path
+  end
   def load_domain_user
     host = request.host
     @domain_user = Domain.includes(:user).find_by(host: host)&.user
@@ -36,8 +49,7 @@ class ApplicationController < ActionController::Base
     log_event(:warn, 'not_found', _e)
     respond_to do |format|
       format.html do
-        flash[:alert] = "We couldn't find what you were looking for."
-        redirect_back fallback_location: root_path
+        render 'errors/not_found', status: :not_found
       end
       format.json { render json: { error: "not_found" }, status: :not_found }
     end
@@ -47,8 +59,8 @@ class ApplicationController < ActionController::Base
     log_event(:error, 'server_error', e)
     respond_to do |format|
       format.html do
-        flash[:alert] = "Something went wrong. Please try again."
-        redirect_back fallback_location: root_path
+        # Avoid redirect loops on pages like root; render a friendly error page instead.
+        render 'errors/internal', status: :internal_server_error
       end
       format.json { render json: { error: "server_error" }, status: :internal_server_error }
     end

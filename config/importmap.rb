@@ -1,2 +1,3 @@
 pin "application"
-pin "theme_toggle"
+pin "news_client"
+pin "@hotwired/turbo-rails", to: "turbo.min.js", preload: true

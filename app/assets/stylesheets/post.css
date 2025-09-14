@@ -1,0 +1,67 @@
+/* Blog post typography */
+.post-content { font-size: 1.06rem; line-height: 1.75; color: #212529; }
+.post-content h1, .post-content h2, .post-content h3, .post-content h4 { margin-top: 1.25rem; margin-bottom: .75rem; line-height: 1.25; }
+.post-content h1 { font-size: clamp(1.6rem, 2.6vw, 2.2rem); }
+.post-content h2 { font-size: clamp(1.35rem, 2.1vw, 1.8rem); }
+.post-content h3 { font-size: clamp(1.2rem, 1.8vw, 1.4rem); }
+.post-content p { margin: 0 0 1rem; }
+.post-content a { color: var(--accent, #0d6efd); text-decoration: none; }
+.post-content a:hover { text-decoration: underline; }
+.post-content blockquote { margin: 1rem 0; padding: .75rem 1rem; border-left: 4px solid rgba(13,110,253,.4); background: rgba(13,110,253,.06); border-radius: .5rem; }
+.post-content pre { background: #0f172a; color: #e5e7eb; padding: .85rem 1rem; border-radius: .5rem; overflow: auto; box-shadow: inset 0 0 0 1px rgba(255,255,255,.05); }
+.post-content code { background: rgba(13,110,253,.08); color: #0d6efd; padding: .1rem .35rem; border-radius: .35rem; }
+.post-content pre code { background: transparent; color: inherit; padding: 0; }
+.post-content img { max-width: 100%; height: auto; border-radius: .5rem; }
+.post-content hr { border: 0; border-top: 1px solid rgba(0,0,0,.08); margin: 1.25rem 0; }
+.post-meta { color: #6c757d; font-size: .95rem; }
+.post-header { margin-bottom: .75rem; }
+.post-segment { border-radius: .75rem !important; }
+
+@media (prefers-color-scheme: dark) {
+  .post-content { color: #e9ecef; }
+  .post-content blockquote { border-left-color: rgba(13,110,253,.6); background: rgba(13,110,253,.12); }
+  .post-content pre { background: #0b1020; color: #e7eaf0; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); }
+  .post-content hr { border-top-color: rgba(255,255,255,.12); }
+  .post-meta { color: #c8cdd3; }
+}
+
+/* Reading width constraint for better legibility */
+.reading-width { max-width: 760px; margin-left: auto; margin-right: auto; }
+
+/* Modern article card */
+.post-article {
+  background: rgba(255,255,255,var(--glass-alpha, .10));
+  backdrop-filter: blur(var(--glass-blur, 3px));
+  border: 1px solid rgba(0,0,0,.06);
+  border-radius: .9rem;
+  padding: 1.25rem 1.15rem;
+  box-shadow: 0 var(--card-shadow-y, .75rem) var(--card-shadow-blur, 1.25rem) rgba(0,0,0,var(--card-shadow-alpha, .2));
+}
+.post-article:hover { box-shadow: 0 1rem 1.75rem rgba(0,0,0,var(--card-shadow-alpha-hover, .28)); }
+
+/* Slightly larger comfortable reading size */
+.post-article .post-content { font-size: 1.08rem; line-height: 1.78; }
+
+/* Blog index */
+.post-index .header-row { display:flex; align-items:center; justify-content:space-between; gap:.75rem; margin-bottom:.75rem; }
+.post-grid { display:grid; grid-template-columns: repeat(12, 1fr); gap: 1rem; }
+.post-grid .col { grid-column: span 12; }
+@media (min-width: 576px) { .post-grid .col { grid-column: span 6; } }
+@media (min-width: 992px) { .post-grid .col { grid-column: span 4; } }
+.post-card { height:100%; background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:.75rem; display:flex; flex-direction:column; transition: transform .2s ease, box-shadow .2s ease; }
+.post-card:hover { transform: translateY(-2px); box-shadow: 0 1rem 1.5rem rgba(0,0,0,.25); }
+.post-card .body { padding: .9rem; display:flex; flex-direction:column; gap:.35rem; }
+.post-card .title { font-weight:700; line-height:1.25; }
+.post-card .excerpt { color:#000000; font-size:.95rem; }
+.post-card .meta { color:#9aa4b2; font-size:.85rem; margin-top:.25rem; }
+.tag-pills { display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.4rem; }
+.tag-pill { font-size:.8rem; padding:.15rem .45rem; border-radius:999px; border:1px solid rgba(255,255,255,.18); color:#e5e7eb; background: rgba(255,255,255,.06); text-decoration:none; }
+.tag-pill:hover { background: rgba(255,255,255,.12); color:#fff; }
+
+/* Blog show hero */
+.post-show-hero { position:relative; overflow:hidden; border-radius:.9rem; background: linear-gradient(135deg, color-mix(in srgb, var(--accent, #0d6efd) 35%, transparent), rgba(99,102,241,.28)); padding:1.15rem; margin-bottom:.9rem; }
+.post-show-hero .title { margin:0 0 .25rem; color:#fff; text-wrap: balance; }
+.post-show-hero .post-meta { color: rgba(255,255,255,.92); }
+
+/* Compact action row */
+.post-actions .btn { --bs-btn-padding-y: .25rem; }

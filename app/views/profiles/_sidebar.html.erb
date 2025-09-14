@@ -1,0 +1,76 @@
+<div class="ui card fluid">
+  <div class="content">
+    <% u = local_assigns[:user] || @user %>
+    <div class="header"><%= u&.name %></div>
+    <div class="meta">
+      <% if u&.github_username.present? %>
+        @<%= u.github_username %>
+      <% end %>
+    </div>
+  </div>
+  <div class="content">
+    <div class="ui small feed">
+      <% if u&.avatar_url.present? %>
+        <div class="event">
+          <div class="label"><img src="<%= u.avatar_url %>" alt="Avatar" width="48" height="48" class="rounded-circle border" loading="lazy"></div>
+          <div class="content"><div class="summary">Avatar</div></div>
+        </div>
+      <% end %>
+      <% if u&.bio.present? %>
+        <div class="event">
+          <div class="label"><i class="info circle icon"></i></div>
+          <div class="content"><div class="summary"><%= u.bio %></div></div>
+        </div>
+      <% end %>
+      <% if u&.respond_to?(:location) && u.location.present? %>
+        <div class="event">
+          <div class="label"><i class="map marker alternate icon"></i></div>
+          <div class="content"><div class="summary"><%= u.location %></div></div>
+        </div>
+      <% end %>
+      <% if u&.respond_to?(:skills) && u.skills.present? %>
+        <div class="event">
+          <div class="label"><i class="laptop code icon"></i></div>
+          <div class="content"><div class="summary"><%= u.skills %></div></div>
+        </div>
+      <% end %>
+      <% if u&.respond_to?(:views_count) %>
+        <div class="event">
+          <div class="label"><i class="eye icon"></i></div>
+          <div class="content"><div class="summary">Views: <%= u.views_count %></div></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="content">
+    <div class="ui relaxed divided list">
+      <% if u&.website.present? %><div class="item"><i class="globe icon"></i><div class="content"><a href="<%= u.website %>" target="_blank" rel="noopener">Website</a></div></div><% end %>
+      <% if u&.github_url.present? %><div class="item"><i class="github icon"></i><div class="content"><a href="<%= u.github_url %>" target="_blank" rel="noopener">GitHub</a></div></div><% end %>
+      <% if u&.twitter_url.present? %><div class="item"><i class="twitter icon"></i><div class="content"><a href="<%= u.twitter_url %>" target="_blank" rel="noopener">Twitter/X</a></div></div><% end %>
+      <% if u&.linkedin_url.present? %><div class="item"><i class="linkedin icon"></i><div class="content"><a href="<%= u.linkedin_url %>" target="_blank" rel="noopener">LinkedIn</a></div></div><% end %>
+      <% if u&.youtube_url.present? %><div class="item"><i class="youtube icon"></i><div class="content"><a href="<%= u.youtube_url %>" target="_blank" rel="noopener">YouTube</a></div></div><% end %>
+    </div>
+  </div>
+  <div class="extra content">
+    <div class="ui small buttons">
+      <%= link_to "View Projects", projects_path(username: u&.github_username), class: "ui primary button" %>
+      <% if u&.resume&.attached? %>
+        <%= link_to "Download Resume", profile_resume_path(u), class: "ui button" %>
+      <% end %>
+    </div>
+    <% if u&.respond_to?(:resume_scan_status) && u.resume.attached? %>
+      <div class="ui horizontal list" style="margin-top:.5rem;">
+        <div class="item">
+          <% case u.resume_scan_status %>
+          <% when 'pending' %>
+            <div class="ui yellow label">Resume scan: pending</div>
+          <% when 'infected' %>
+            <div class="ui red label">Resume scan: infected</div>
+          <% when 'clean' %>
+            <div class="ui green label">Resume scan: clean</div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

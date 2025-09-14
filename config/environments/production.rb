@@ -14,6 +14,9 @@ Rails.application.configure do
   config.i18n.fallbacks = true
   config.active_support.report_deprecations = false
   config.lograge.enabled = true
+  # Disable CSS compression via SassC; modern CSS (e.g., @supports selector(:has()))
+  # is not understood by SassC's compressor and raises during precompile.
+  config.assets.css_compressor = nil
   # If your app is accessed via multiple hostnames or proxies, origin checks can
   # cause CSRF 422s when the Origin header differs. Disable with caution.
   if ENV["DISABLE_FORGERY_ORIGIN_CHECK"] == "true"

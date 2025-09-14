@@ -1,0 +1,42 @@
+<div class="row g-3">
+  <div class="col-12 d-flex justify-content-between align-items-center">
+    <h1 class="h3 mb-0 section-title">Latest News</h1>
+  </div>
+
+  <div class="col-12">
+    <ul class="nav nav-pills mb-3">
+      <% @categories.each do |cat| %>
+        <% active = (cat == @category) %>
+        <li class="nav-item me-2">
+          <%= link_to cat.titleize, news_path(category: cat), class: "nav-link#{active ? ' active' : ''}" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div id="news-list" class="row g-3" data-category="<%= @category %>">
+    <% 9.times do %>
+      <div class="col-12 col-sm-6 col-lg-4">
+        <div class="card card-news h-100">
+          <div class="card-body">
+            <div class="skeleton" style="height:18px;width:85%;border-radius:6px;margin-top:.5rem;"></div>
+            <div class="skeleton" style="height:12px;width:60%;border-radius:6px;margin-top:.5rem;"></div>
+            <div class="skeleton" style="height:12px;width:40%;border-radius:6px;margin-top:.5rem;"></div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div id="news-pagination" class="col-12 mt-2">
+    <div class="pagination-controls">
+      <button class="btn btn-sm btn-outline-secondary" id="prev-page">Prev</button>
+      <span id="page-info" class="text-muted small">Page 1</span>
+      <button class="btn btn-sm btn-outline-secondary" id="next-page">Next</button>
+    </div>
+  </div>
+
+  <noscript>
+    <div class="col-12 text-muted">Enable JavaScript to view the latest news.</div>
+  </noscript>
+</div>

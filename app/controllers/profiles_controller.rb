@@ -12,7 +12,11 @@ class ProfilesController < ApplicationController
 
   def show
     @user = User.friendly.find(params[:slug])
-    @projects = @user.projects.order(stars: :desc)
+    # Always show projects for the admin/site owner while keeping profile of @user
+    owner = site_owner
+    owner ||= @user # fallback if SITE_OWNER_GITHUB not configured
+    @projects_owner = owner
+    @projects = owner.projects.order(stars: :desc)
     @user.increment!(:views_count) if @user.has_attribute?(:views_count)
   end
 
@@ -132,7 +136,7 @@ class ProfilesController < ApplicationController
     params.require(:user).permit(:name, :github_username, :bio, :website, :avatar_url, :banner_url,
                                  :twitter_url, :linkedin_url, :github_url, :youtube_url,
                                  :location, :skills, :theme, :education, :experience, :resume,
-                                 :accent_color, :custom_css,
+                                 :accent_color, :custom_css, :background_intensity, :allow_comments,
                                  :current_password, :password, :password_confirmation)
   end
 
