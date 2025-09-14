@@ -132,7 +132,7 @@ class ProfilesController < ApplicationController
     params.require(:user).permit(:name, :github_username, :bio, :website, :avatar_url, :banner_url,
                                  :twitter_url, :linkedin_url, :github_url, :youtube_url,
                                  :location, :skills, :theme, :education, :experience, :resume,
-                                 :accent_color, :custom_css,
+                                 :accent_color, :custom_css, :background_intensity, :allow_comments,
                                  :current_password, :password, :password_confirmation)
   end
 

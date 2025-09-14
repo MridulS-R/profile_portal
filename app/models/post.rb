@@ -6,6 +6,8 @@ class Post < ApplicationRecord
   belongs_to :category, optional: true
   has_many :post_tags, dependent: :destroy
   has_many :tags, through: :post_tags
+  has_many :comments, class_name: 'PostComment', dependent: :destroy
+  has_many :reactions, dependent: :destroy
 
   validates :title, presence: true
   validates :body, presence: true

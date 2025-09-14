@@ -33,5 +33,8 @@ Rails.application.routes.draw do
 
   get "/up", to: proc { [200, { "Content-Type" => "text/plain" }, ["ok"]] }
 
-  resources :posts
+  resources :posts do
+    resources :post_comments, only: [:create, :destroy]
+    post 'react', to: 'post_reactions#create'
+  end
 end

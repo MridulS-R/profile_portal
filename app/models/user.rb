@@ -11,6 +11,8 @@ class User < ApplicationRecord
   has_many :domains, dependent: :destroy
   has_many :posts, dependent: :destroy
   has_one_attached :resume
+  has_many :post_comments, dependent: :destroy
+  has_many :post_reactions, dependent: :destroy
 
   validate :validate_resume
 

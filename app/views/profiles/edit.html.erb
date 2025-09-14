@@ -45,6 +45,16 @@
           <div class="form-text">Choose your accent color (buttons, links).</div>
         </div>
       <% end %>
+
+      <% if @user.respond_to?(:background_intensity) %>
+        <div class="mb-3">
+          <%= f.label :background_intensity, class: "form-label" %>
+          <%= f.select :background_intensity,
+                       options_for_select([["Soft", "soft"], ["Medium", "medium"], ["Bold", "bold"]], @user.background_intensity),
+                       {}, class: "form-select" %>
+          <div class="form-text">Controls the strength of the abstract background and glass effect.</div>
+        </div>
+      <% end %>
       <div class="row g-3">
         <div class="col-md-6">
           <%= f.label :avatar_url, class: "form-label" %>
@@ -125,6 +135,13 @@
           <%= f.label :custom_css, class: "form-label" %>
           <%= f.text_area :custom_css, rows: 5, class: "form-control", placeholder: ".btn-primary { border-radius: 9999px; }" %>
           <div class="form-text">Optional advanced styling. Use with care.</div>
+        </div>
+      <% end %>
+
+      <% if @user.respond_to?(:allow_comments) %>
+        <div class="form-check mb-3">
+          <%= f.check_box :allow_comments, class: 'form-check-input', id: 'allow_comments' %>
+          <%= f.label :allow_comments, 'Allow comments on my blog posts', class: 'form-check-label' %>
         </div>
       <% end %>
 

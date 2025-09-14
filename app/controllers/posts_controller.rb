@@ -5,6 +5,8 @@ class PostsController < ApplicationController
 
   def index
     @posts = Post.published.recent.includes(:user, :tags, :category)
+    # Determine which user sidebar to show (domain user → site owner → current user → first)
+    @user = @domain_user || site_owner || current_user || User.first
     if params[:tag].present?
       @tag = Tag.friendly.find(params[:tag]) rescue nil
       @posts = @posts.joins(:tags).where(tags: { id: @tag.id }) if @tag
@@ -57,5 +59,10 @@ class PostsController < ApplicationController
 
   def post_params
     params.require(:post).permit(:title, :body, :published_at, :category_id, :tag_names)
+  end
+
+  def site_owner
+    gh = ENV["SITE_OWNER_GITHUB"].presence
+    gh && User.find_by(github_username: gh)
   end
 end
