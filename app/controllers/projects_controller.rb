@@ -49,3 +49,4 @@ class ProjectsController < ApplicationController
     gh && User.find_by(github_username: gh)
   end
 end
+
