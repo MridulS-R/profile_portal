@@ -11,7 +11,7 @@
   </div>
   <div class="col-12 text-muted small">Published <%= time_ago_in_words(@post.published_at || @post.created_at) %> ago by <%= @post.user.name %></div>
   <div class="col-12">
-    <div class="card shadow-sm">
+    <div class="card shadow-sm card-pressable">
       <div class="card-body">
         <%= @post.rendered_body.html_safe %>
       </div>
@@ -73,10 +73,10 @@
     <% if @post.category || @post.tags.any? %>
       <div class="mb-3">
         <% if @post.category %>
-          <span class="badge text-bg-secondary me-2"><%= @post.category.name %></span>
+          <span class="chip me-2"><span class="dot"></span> <%= @post.category.name %></span>
         <% end %>
         <% @post.tags.each do |t| %>
-          <%= link_to t.name, posts_path(tag: t.slug), class: 'badge text-bg-light me-1' %>
+          <%= link_to t.name, posts_path(tag: t.slug), class: 'chip me-1' %>
         <% end %>
       </div>
     <% end %>

@@ -37,9 +37,9 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item"><%= link_to "News", root_path, class: "nav-link" %></li>
-            <li class="nav-item"><%= link_to "Projects", projects_path, class: "nav-link" %></li>
-            <li class="nav-item"><%= link_to "Blog", posts_path, class: "nav-link" %></li>
+            <li class="nav-item"><%= link_to "News", root_path, class: ["nav-link", (current_page?(root_path) ? 'active' : nil)].compact.join(' ') %></li>
+            <li class="nav-item"><%= link_to "Projects", projects_path, class: ["nav-link", (current_page?(projects_path) ? 'active' : nil)].compact.join(' ') %></li>
+            <li class="nav-item"><%= link_to "Blog", posts_path, class: ["nav-link", (controller_name == 'posts' ? 'active' : nil)].compact.join(' ') %></li>
             <% if Rails.env.development? %>
               <li class="nav-item"><%= link_to "Sidekiq", "/sidekiq", class: "nav-link" %></li>
             <% end %>
